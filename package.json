@@ -1,0 +1,23 @@
+{
+  "version": "0.0.1",
+  "name": "whitelabel",
+  "description": "Toolset for whitelabeling apps",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/start.ts"
+  },
+  "dependencies": {
+    "@octokit/auth-app": "^3.6.1",
+    "@octokit/rest": "^18.12.0",
+    "@types/flat": "^5.0.2",
+    "@types/js-yaml": "^4.0.5",
+    "commander": "^9.1.0",
+    "js-yaml": "^4.1.0",
+    "node-fetch": "^3.2.3",
+    "oauth": "^0.9.15",
+    "ts-node": "^10.7.0",
+    "typescript": "^4.6.3",
+    "decamelize": "^5.0.1",
+    "flat": "^5.0.2"
+  }
+}
