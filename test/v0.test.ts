@@ -1,7 +1,7 @@
 import buildCommand from '../src/core'
 import { CommanderError } from 'commander'
 
-const getCommandOutput = (args) => {
+const getCommandOutput = (args: readonly string[]) => {
   let output = ''
   let command = buildCommand((err) => {
     throw err

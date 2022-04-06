@@ -7,4 +7,4 @@ export const PLATFORMS: Platform[] = [PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_W
 
 export type StoreName = 'appstore' | 'playstore'
 
-const VERSION_FILE = 'version.json'
+export const VERSION_FILE = 'version.json'
