@@ -1,11 +1,34 @@
-export type Platform = 'ios' | 'android' | 'web'
+import { program, createCommand, CommanderError } from 'commander'
+import parseReleaseNotes from './release-notes/program-parse-release-notes'
+import moveToProgram from './release-notes/program-move-to'
+import prepareMetadata from './release-notes/program-prepare-metadata'
+import toBash from './build-config/program-to-bash'
+import toJson from './build-config/program-to-json'
+import toProperties from './build-config/program-to-properties'
+import writeXcConfig from './build-config/program-write-xcconfig'
 
-export const PLATFORM_ANDROID: Platform = 'android'
-export const PLATFORM_IOS: Platform = 'ios'
-export const PLATFORM_WEB: Platform = 'web'
-export const PLATFORMS: Platform[] = [PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB]
+const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
+  let root = program
+    .exitOverride(exitOverride)
+    .version('0.1.0')
+    .option('-d, --debug', 'enable extreme logging')
 
+  const v0 = root.command('v0')
 
-export type StoreName = 'appstore' | 'playstore'
+  const releaseNoteCommand = v0.command('release-notes')
+  parseReleaseNotes(releaseNoteCommand)
+  moveToProgram(releaseNoteCommand)
+  prepareMetadata(releaseNoteCommand)
 
-const VERSION_FILE = 'version.json'
+  const versionCommand = v0.command('version').description('Manage version')
+
+  const buildConfigCommand = v0.command('build-config')
+  toBash(buildConfigCommand)
+  toJson(buildConfigCommand)
+  toProperties(buildConfigCommand)
+  writeXcConfig(buildConfigCommand)
+
+  return root
+}
+
+export default buildCommand
