@@ -14,7 +14,7 @@ const loadBuildConfig = (
     throw Error('No BUILD_CONFIG_NAME supplied!')
   }
 
-  let buildConfigPath = process.cwd() + '/../build-configs/' + buildConfigName
+  let buildConfigPath = process.cwd() + '/build-configs/' + buildConfigName
 
   const buildConfig = require(buildConfigPath).default
 
