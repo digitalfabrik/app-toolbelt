@@ -1,57 +1,5 @@
 import { Command } from 'commander'
-import { Platform } from '../constants'
-import { authenticate } from '../github'
-import { tagName } from './git'
-
-type Options = {
-  deliverinoPrivateKey: string
-  owner: string
-  repo: string
-  releaseNotes: string
-  downloadLinks: string
-  developmentRelease: boolean
-  dryRun: boolean
-}
-
-const githubRelease = async (
-  platform: Platform,
-  newVersionName: string,
-  newVersionCode: string,
-  { deliverinoPrivateKey, owner, repo, releaseNotes, downloadLinks, developmentRelease, dryRun }: Options
-) => {
-  const versionCode = parseInt(newVersionCode, 10)
-  if (Number.isNaN(versionCode)) {
-    throw new Error(`Failed to parse version code string: ${newVersionCode}`)
-  }
-
-  const releaseName = `[${platform}${
-    developmentRelease ? ' development release' : ''
-  }] ${newVersionName} - ${versionCode}`
-  console.warn('Creating release with name ', releaseName)
-
-  const developmentMessage = developmentRelease
-    ? 'This release is only delivered to development and not yet visible for users.\n\n'
-    : ''
-
-  const body = `${developmentMessage}${JSON.parse(releaseNotes)}${
-    downloadLinks ? `\nArtifacts:\n${downloadLinks}` : ''
-  }`
-  console.warn('and body ', body)
-
-  if (dryRun) {
-    return
-  }
-
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
-
-  await appOctokit.repos.createRelease({
-    owner,
-    repo,
-    tag_name: tagName({ versionName: newVersionName, platform }),
-    name: releaseName,
-    body
-  })
-}
+import { authenticate, createGithubRelease } from '../github'
 
 export default (parent: Command) => parent
   .command('create <platform> <new-version-name> <new-version-code>')
@@ -68,15 +16,26 @@ export default (parent: Command) => parent
   .description('creates a new release for the specified platform')
   .action(async (platform, newVersionName, newVersionCode, options: { [key: string]: any }) => {
     try {
-      await githubRelease(platform, newVersionName, newVersionCode, {
+      const versionCode = parseInt(newVersionCode, 10)
+      if (Number.isNaN(versionCode)) {
+        throw new Error(`Failed to parse version code string: ${newVersionCode}`)
+      }
+
+      const appOctokit = await authenticate({
         deliverinoPrivateKey: options.deliverinoPrivateKey,
-        repo: options.repo,
         owner: options.owner,
-        developmentRelease: options.developmentRelease,
-        downloadLinks: options.downloadLinks,
-        releaseNotes: options.releaseNotes,
-        dryRun: options.dryRun
+        repo: options.repo
       })
+
+      await createGithubRelease(platform, newVersionName, newVersionCode,
+        options.owner,
+        options.repo,
+        options.developmentRelease,
+        options.downloadLinks,
+        options.releaseNotes,
+        options.dryRun,
+        appOctokit
+      )
     } catch (e) {
       console.error(e)
       process.exit(1)

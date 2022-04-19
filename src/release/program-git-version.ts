@@ -1,98 +1,5 @@
-import { Octokit } from '@octokit/rest'
 import { Command } from 'commander'
-
-import { VERSION_FILE, PLATFORMS, MAIN_BRANCH, Platform } from '../constants'
-import { authenticate } from '../github'
-import { tagName } from './git'
-
-type TagOptions = {
-  versionName: string
-  versionCode: number
-  owner: string
-  repo: string
-  commitSha: string
-  appOctokit: Octokit
-  platform: Platform
-}
-
-const createTag = async ({ versionName, versionCode, owner, repo, commitSha, appOctokit, platform }: TagOptions) => {
-  const name = tagName({ versionName, platform })
-  const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
-
-  const tag = await appOctokit.git.createTag({
-    owner,
-    repo,
-    tag: name,
-    message: tagMessage,
-    object: commitSha,
-    type: 'commit'
-  })
-  const tagSha = tag.data.sha
-  console.warn(`New tag with name ${name} successfully created.`)
-
-  await appOctokit.git.createRef({
-    owner,
-    repo,
-    ref: `refs/tags/${name}`,
-    sha: tagSha
-  })
-  console.warn(`New ref with name ${name} successfully created.`)
-}
-
-const commitAndTag = async (
-  versionName: string,
-  versionCodeString: string,
-  {
-    deliverinoPrivateKey,
-    owner,
-    repo,
-    branch
-  }: { deliverinoPrivateKey: string; owner: string; repo: string; branch: string }
-) => {
-  if (branch !== MAIN_BRANCH) {
-    throw new Error(`Version bumps are only allowed on the ${MAIN_BRANCH} branch!`)
-  }
-
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
-  const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
-
-  const versionCode = parseInt(versionCodeString, 10)
-  if (Number.isNaN(versionCode)) {
-    throw new Error(`Failed to parse version code string: ${versionCodeString}`)
-  }
-
-  const contentBase64 = Buffer.from(JSON.stringify({ versionName, versionCode })).toString('base64')
-
-  const commitMessage = `Bump version name to ${versionName} and version code to ${versionCode}\n[skip ci]`
-
-  const commit = await appOctokit.repos.createOrUpdateFileContents({
-    owner,
-    repo,
-    path: VERSION_FILE,
-    content: contentBase64,
-    branch,
-    message: commitMessage,
-    // @ts-expect-error Random typescript error: property sha is not available on type { ..., sha: string, ... }
-    sha: versionFileContent.data.sha
-  })
-  console.warn(`New version successfully commited with message "${commitMessage}".`)
-
-  const commitSha = commit.data.commit.sha
-
-  await Promise.all(
-    PLATFORMS.map(platform =>
-      createTag({
-        versionName,
-        versionCode,
-        commitSha: commitSha!,
-        appOctokit,
-        owner,
-        repo,
-        platform
-      })
-    )
-  )
-}
+import { authenticate, commitVersion, createTags } from '../github'
 
 export default (parent: Command) => parent
   .command('bump-to <new-version-name> <new-version-code>')
@@ -106,12 +13,28 @@ export default (parent: Command) => parent
   .description('commits the supplied version name and code to github and tags the commit')
   .action(async (newVersionName, newVersionCode, options: { [key: string]: any }) => {
     try {
-      await commitAndTag(newVersionName, newVersionCode, {
-        deliverinoPrivateKey: options.deliverinoPrivateKey,
-        branch: options.branch,
-        owner: options.owner,
+      const appOctokit = await authenticate({
+        deliverinoPrivateKey: options.deliverinoPrivateKey, owner: options.owner,
         repo: options.repo
       })
+
+      const versionCode = parseInt(newVersionCode, 10)
+      if (Number.isNaN(versionCode)) {
+        throw new Error(`Failed to parse version code string: ${newVersionCode}`)
+      }
+
+      const commitSha = await commitVersion(newVersionName, versionCode,
+        options.owner,
+        options.repo,
+        options.branch,
+        appOctokit
+      )
+
+      if (!commitSha) {
+        throw new Error(`Failed to commit!`)
+      }
+
+      await createTags(newVersionName, versionCode, commitSha, options.owner, options.repo, appOctokit)
     } catch (e) {
       console.error(e)
       process.exit(1)
