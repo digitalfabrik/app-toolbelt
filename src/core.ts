@@ -10,6 +10,7 @@ import calcNextVersion from './version/program-calc-next-version'
 import gitVersion from './release/program-git-version'
 import githubRelease from './release/program-github-release'
 import jiraRelease from './release/program-jira-release'
+import sentryRelease from './release/program-sentry-release'
 import triggerPipeline from './ci/program-trigger-pipeline'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
@@ -41,6 +42,7 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   gitVersion(releaseCommand)
   githubRelease(releaseCommand)
   jiraRelease(releaseCommand)
+  sentryRelease(releaseCommand)
 
   const ciCommand = v0.command('ci')
   triggerPipeline(ciCommand)

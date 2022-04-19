@@ -24,13 +24,32 @@ const getCommandOutput = (args: readonly string[]) => {
       throw e
     }
   }
-  
+
   return output
 }
 
-test('stability test', () => {
-  expect(getCommandOutput(['v0'])).toMatchSnapshot()
-  expect(getCommandOutput(['v0', 'release-notes'])).toMatchSnapshot()
-  expect(getCommandOutput(['v0', 'build-config'])).toMatchSnapshot()
-  expect(getCommandOutput(['v0', 'version'])).toMatchSnapshot()
+describe('stability test', () => {
+  test('v0', () => {
+    expect(getCommandOutput(['v0'])).toMatchSnapshot()
+  })
+  
+  test('ci', () => {
+    expect(getCommandOutput(['v0', 'ci'])).toMatchSnapshot()
+  })
+  
+  test('release', () => {
+    expect(getCommandOutput(['v0', 'release'])).toMatchSnapshot()
+  })
+  
+  test('release-notes', () => {
+    expect(getCommandOutput(['v0', 'release-notes'])).toMatchSnapshot()
+  })
+  
+  test('build-config', () => {
+    expect(getCommandOutput(['v0', 'build-config'])).toMatchSnapshot()
+  })
+  
+  test('version', () => {
+    expect(getCommandOutput(['v0', 'version'])).toMatchSnapshot()
+  })
 })
