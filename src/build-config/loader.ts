@@ -1,29 +1,44 @@
 import decamelize from 'decamelize'
 import flat from 'flat'
 import { Platform, PLATFORMS } from '../constants'
+import path from 'path'
 
 export type BuildConfigPlatformType = Platform | 'common'
 const PLATFORM_COMMON: BuildConfigPlatformType = 'common'
 const BUILD_CONFIG_PLATFORMS: BuildConfigPlatformType[] = [...PLATFORMS, PLATFORM_COMMON]
 
-const loadBuildConfig = (
+const findBuildConfigDirectoryInParent = (buildConfigName: string, buildConfigDirectory: string): any | null => {
+  let currentDirectory = process.cwd()
+
+  for (let i = 0; i < 8; i++) {
+    let buildConfigPath = `${currentDirectory}/${buildConfigDirectory}/${buildConfigName}`
+    try {
+      return require(buildConfigPath).default
+    } catch (e) {
+      currentDirectory = path.resolve(currentDirectory, '..')
+    }
+  }
+
+  return null
+}
+
+export const loadBuildConfig = (
   buildConfigName: string | null | undefined,
-  platform: BuildConfigPlatformType
+  platform: BuildConfigPlatformType,
+  buildConfigDirectory: string
 ): Record<string, unknown> => {
   if (!buildConfigName) {
     throw Error('No BUILD_CONFIG_NAME supplied!')
   }
 
-  let buildConfigPath = process.cwd() + '/build-configs/' + buildConfigName
-
-  const buildConfig = require(buildConfigPath).default
+  if (!BUILD_CONFIG_PLATFORMS.includes(platform)) {
+    throw Error(`Invalid platform supplied: ${platform}`)
+  }
+  
+  const buildConfig = findBuildConfigDirectoryInParent(buildConfigName, buildConfigDirectory)
 
   if (!buildConfig) {
     throw Error(`Invalid BUILD_CONFIG_NAME supplied: ${buildConfigName}`)
-  }
-
-  if (!BUILD_CONFIG_PLATFORMS.includes(platform)) {
-    throw Error(`Invalid platform supplied: ${platform}`)
   }
 
   // FIXME this needs to be applied in integreat
@@ -32,10 +47,7 @@ const loadBuildConfig = (
   return buildConfig[platform]
 }
 
-export default loadBuildConfig
-
-export const loadBuildConfigAsKeyValue = (buildConfigName: string, platform: BuildConfigPlatformType, spaces = true, quotes = false) => {
-  const buildConfig = loadBuildConfig(buildConfigName, platform)
+export const asKeyValues = (buildConfig: Record<string, unknown>, buildConfigName: string, platform: BuildConfigPlatformType, spaces = true, quotes = false) => {
   const xcconfigOptions = flat<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
     delimiter: '_',
     // Dashes are not supported in keys in xcconfigs and android resources
