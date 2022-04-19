@@ -7,9 +7,7 @@
     "baseUrl": "./src",
     "outDir": "dist",
     "target": "es2020",
-    "lib": [
-      "es2020"
-    ],
+    "lib": ["es2020"],
     "module": "CommonJS", // Should be changed to ES2020 once stable
     "moduleResolution": "Node",
     "allowSyntheticDefaultImports": true,

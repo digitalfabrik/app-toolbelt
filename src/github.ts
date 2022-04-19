@@ -3,10 +3,10 @@ import { Octokit } from '@octokit/rest'
 import { MAIN_BRANCH, Platform, PLATFORMS, VERSION_FILE } from './constants'
 
 export const authenticate = async ({
-                                     deliverinoPrivateKey,
-                                     owner,
-                                     repo
-                                   }: {
+  deliverinoPrivateKey,
+  owner,
+  repo
+}: {
   deliverinoPrivateKey: string
   owner: string
   repo: string
@@ -14,15 +14,15 @@ export const authenticate = async ({
   const appId = 59249 // https://github.com/apps/deliverino
   const privateKey = Buffer.from(deliverinoPrivateKey, 'base64').toString('ascii')
 
-  const octokit = new Octokit({authStrategy: createAppAuth, auth: {appId, privateKey}})
+  const octokit = new Octokit({ authStrategy: createAppAuth, auth: { appId, privateKey } })
   const {
-    data: {id: installationId}
-  } = await octokit.apps.getRepoInstallation({owner, repo})
+    data: { id: installationId }
+  } = await octokit.apps.getRepoInstallation({ owner, repo })
   const {
-    data: {token}
-  } = await octokit.apps.createInstallationAccessToken({installation_id: installationId})
+    data: { token }
+  } = await octokit.apps.createInstallationAccessToken({ installation_id: installationId })
 
-  return new Octokit({auth: token})
+  return new Octokit({ auth: token })
 }
 
 type ReleaseInformation = {
@@ -30,9 +30,16 @@ type ReleaseInformation = {
   versionName: string
 }
 
-export const versionTagName = ({platform, versionName}: ReleaseInformation): string => `${versionName}-${platform}`
+export const versionTagName = ({ platform, versionName }: ReleaseInformation): string => `${versionName}-${platform}`
 
-const createTag = async (tagName: string, tagMessage: string, owner: string, repo: string, commitSha: string, appOctokit: Octokit) => {
+const createTag = async (
+  tagName: string,
+  tagMessage: string,
+  owner: string,
+  repo: string,
+  commitSha: string,
+  appOctokit: Octokit
+) => {
   const tag = await appOctokit.git.createTag({
     owner,
     repo,
@@ -56,16 +63,18 @@ const createTag = async (tagName: string, tagMessage: string, owner: string, rep
 export const commitVersion = async (
   versionName: string,
   versionCode: number,
-  owner: string, repo: string, branch: string,
+  owner: string,
+  repo: string,
+  branch: string,
   appOctokit: Octokit
 ): Promise<string | undefined> => {
   if (branch !== MAIN_BRANCH) {
     throw new Error(`Version bumps are only allowed on the ${MAIN_BRANCH} branch!`)
   }
 
-  const versionFileContent = await appOctokit.repos.getContent({owner, repo, path: VERSION_FILE, ref: branch})
+  const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
 
-  const contentBase64 = Buffer.from(JSON.stringify({versionName, versionCode})).toString('base64')
+  const contentBase64 = Buffer.from(JSON.stringify({ versionName, versionCode })).toString('base64')
 
   const commitMessage = `Bump version name to ${versionName} and version code to ${versionCode}\n[skip ci]`
 
@@ -84,21 +93,20 @@ export const commitVersion = async (
   return commit.data.commit.sha
 }
 
-export const createTags = async (versionName: string, versionCode: number, commitSha: string, owner: string, repo: string, appOctokit: Octokit) => {
+export const createTags = async (
+  versionName: string,
+  versionCode: number,
+  commitSha: string,
+  owner: string,
+  repo: string,
+  appOctokit: Octokit
+) => {
   await Promise.all(
     PLATFORMS.map(platform => {
-        const tagName = versionTagName({versionName, platform})
-        const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
-        return createTag(
-          tagName,
-          tagMessage,
-          owner,
-          repo,
-          commitSha!,
-          appOctokit,
-        )
-      }
-    )
+      const tagName = versionTagName({ versionName, platform })
+      const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
+      return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
+    })
   )
 }
 
@@ -114,7 +122,6 @@ export const createGithubRelease = async (
   dryRun: boolean,
   appOctokit: Octokit
 ) => {
-
   const releaseName = `[${platform}${
     developmentRelease ? ' development release' : ''
   }] ${newVersionName} - ${newVersionCode}`
@@ -136,7 +143,7 @@ export const createGithubRelease = async (
   await appOctokit.repos.createRelease({
     owner,
     repo,
-    tag_name: versionTagName({versionName: newVersionName, platform}),
+    tag_name: versionTagName({ versionName: newVersionName, platform }),
     name: releaseName,
     body
   })

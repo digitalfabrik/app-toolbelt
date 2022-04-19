@@ -34,7 +34,7 @@ export const loadBuildConfig = (
   if (!BUILD_CONFIG_PLATFORMS.includes(platform)) {
     throw Error(`Invalid platform supplied: ${platform}`)
   }
-  
+
   const buildConfig = findBuildConfigDirectoryInParent(buildConfigName, buildConfigDirectory)
 
   if (!buildConfig) {
@@ -47,7 +47,13 @@ export const loadBuildConfig = (
   return buildConfig[platform]
 }
 
-export const asKeyValues = (buildConfig: Record<string, unknown>, buildConfigName: string, platform: BuildConfigPlatformType, spaces = true, quotes = false) => {
+export const asKeyValues = (
+  buildConfig: Record<string, unknown>,
+  buildConfigName: string,
+  platform: BuildConfigPlatformType,
+  spaces = true,
+  quotes = false
+) => {
   const xcconfigOptions = flat<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
     delimiter: '_',
     // Dashes are not supported in keys in xcconfigs and android resources

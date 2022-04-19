@@ -14,10 +14,8 @@ import sentryRelease from './release/program-sentry-release'
 import triggerPipeline from './ci/program-trigger-pipeline'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
-  let root = program
-    .version('0.1.0')
-    .option('-d, --debug', 'enable extreme logging')
-  
+  let root = program.version('0.1.0').option('-d, --debug', 'enable extreme logging')
+
   if (exitOverride) {
     root.exitOverride(exitOverride)
   }

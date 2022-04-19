@@ -28,18 +28,18 @@ const calculateNewVersion = () => {
   }
 }
 
-export default (parent: Command) => parent
-  .command('calc')
-  .description('calculate the next version')
-  .action(() => {
-    try {
-      const newVersion = calculateNewVersion()
+export default (parent: Command) =>
+  parent
+    .command('calc')
+    .description('calculate the next version')
+    .action(() => {
+      try {
+        const newVersion = calculateNewVersion()
 
-      // Log stringified version to enable bash piping
-      console.log(JSON.stringify(newVersion))
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
-  })
-
+        // Log stringified version to enable bash piping
+        console.log(JSON.stringify(newVersion))
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    })

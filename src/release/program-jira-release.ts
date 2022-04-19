@@ -108,26 +108,27 @@ const createRelease = async ({
   )
 }
 
-export default (parent: Command) => parent
-  .command('jira-create <new-version-name>')
-  .requiredOption('--project-name <project-name>', 'the name of the jira project, e.g. integreat-app')
-  .requiredOption('--access-token <access-token>', 'version name of the new release')
-  .requiredOption('--private-key <privateKey>')
-  .requiredOption('--consumer-key <consumer-key>')
-  .description(
-    'create a new release with the name <new-version-name> on jira and assign all issues resolved since the last release'
-  )
-  .action(async (newVersionName, options: { [key: string]: any }) => {
-    try {
-      await createRelease({
-        newVersionName,
-        accessToken: options.accessToken,
-        consumerKey: options.consumerKey,
-        privateKeyBase64: options.privateKey,
-        projectName: options.projectName
-      })
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
-  })
+export default (parent: Command) =>
+  parent
+    .command('jira-create <new-version-name>')
+    .requiredOption('--project-name <project-name>', 'the name of the jira project, e.g. integreat-app')
+    .requiredOption('--access-token <access-token>', 'version name of the new release')
+    .requiredOption('--private-key <privateKey>')
+    .requiredOption('--consumer-key <consumer-key>')
+    .description(
+      'create a new release with the name <new-version-name> on jira and assign all issues resolved since the last release'
+    )
+    .action(async (newVersionName, options: { [key: string]: any }) => {
+      try {
+        await createRelease({
+          newVersionName,
+          accessToken: options.accessToken,
+          consumerKey: options.consumerKey,
+          privateKeyBase64: options.privateKey,
+          projectName: options.projectName
+        })
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    })

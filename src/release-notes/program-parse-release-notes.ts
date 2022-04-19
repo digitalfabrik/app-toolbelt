@@ -19,7 +19,15 @@ type ParseProgramOptionsType = {
   appName?: string
 }
 
-const parseReleaseNotes = ({source, ios, android, web, production, language, appName}: ParseProgramOptionsType): string => {
+const parseReleaseNotes = ({
+  source,
+  ios,
+  android,
+  web,
+  production,
+  language,
+  appName
+}: ParseProgramOptionsType): string => {
   const platforms: Platform[] = [
     android ? PLATFORM_ANDROID : undefined,
     ios ? PLATFORM_IOS : undefined,
@@ -38,7 +46,7 @@ const parseReleaseNotes = ({source, ios, android, web, production, language, app
     console.warn(`No release notes found in source ${source}. Using default notes.`)
   }
 
-  const asNoteType = (as: unknown): NoteType => (as as NoteType)
+  const asNoteType = (as: unknown): NoteType => as as NoteType
 
   // Load all notes not belonging to a release
   const relevantNotes = fileNames
@@ -46,23 +54,23 @@ const parseReleaseNotes = ({source, ios, android, web, production, language, app
     // @ts-expect-error
     .map((fileName: string): NoteType => yaml.safeLoad(fs.readFileSync(`${source}/${fileName}`)))
     .map(fileName => asNoteType(yaml.load(fs.readFileSync(`${source}/${fileName}`, 'utf-8'))))
-    .filter(note => isNoteRelevant({note, platforms}))
+    .filter(note => isNoteRelevant({ note, platforms }))
 
   // If the production flag is set, hide information that is irrelevant for users
   if (production) {
     const productionNotes = relevantNotes.filter(note => note.show_in_stores)
-    return formatNotes({notes: productionNotes, language, production, appName})
+    return formatNotes({ notes: productionNotes, language, production, appName })
   }
 
-  return formatDevelopmentNotes({notes: relevantNotes, language, platforms})
+  return formatDevelopmentNotes({ notes: relevantNotes, language, platforms })
 }
 
 const parseNotesProgram = (options: ParseProgramOptionsType) => {
   try {
-    const notes = parseReleaseNotes({...options})
+    const notes = parseReleaseNotes({ ...options })
 
     if (options.destination) {
-      fs.mkdirSync(path.dirname(options.destination), {recursive: true})
+      fs.mkdirSync(path.dirname(options.destination), { recursive: true })
       fs.writeFileSync(options.destination, notes)
     }
 
@@ -74,27 +82,31 @@ const parseNotesProgram = (options: ParseProgramOptionsType) => {
   }
 }
 
-export default (parent: Command) => parent
-  .command('parse-release-notes')
-  .description(
-    'parse the release notes and outputs the release notes as JSON string and writes them to the specified file'
-  )
-  .option('--ios', 'include release notes for ios')
-  .option('--android', 'include release notes for android')
-  .option('--web', 'include release notes for web.')
-  .option(
-    '--production',
-    'whether to hide extra information, e.g. issue keys, hidden notes and platforms and prepare the notes for a store. may not be used with multiple platforms. If set to true, make sure to pass the app name as well.'
-  )
-  .option('--app-name <app-name>', 'the name of the app to prepare the notes for. Only used if production flag is set.')
-  .option('--destination <destination>', 'if specified the parsed notes are saved to the directory')
-  .requiredOption(
-    '--source <source>',
-    'the directory of the release notes to parse',
-    `../${RELEASE_NOTES_DIR}/${UNRELEASED_DIR}`
-  )
-  .requiredOption('--language <language>', 'the language of the release notes to parse', DEFAULT_NOTES_LANGUAGE)
-  .action((options: { [key: string]: any }) => {
-    // @ts-ignore
-    parseNotesProgram({...options})
-  })
+export default (parent: Command) =>
+  parent
+    .command('parse-release-notes')
+    .description(
+      'parse the release notes and outputs the release notes as JSON string and writes them to the specified file'
+    )
+    .option('--ios', 'include release notes for ios')
+    .option('--android', 'include release notes for android')
+    .option('--web', 'include release notes for web.')
+    .option(
+      '--production',
+      'whether to hide extra information, e.g. issue keys, hidden notes and platforms and prepare the notes for a store. may not be used with multiple platforms. If set to true, make sure to pass the app name as well.'
+    )
+    .option(
+      '--app-name <app-name>',
+      'the name of the app to prepare the notes for. Only used if production flag is set.'
+    )
+    .option('--destination <destination>', 'if specified the parsed notes are saved to the directory')
+    .requiredOption(
+      '--source <source>',
+      'the directory of the release notes to parse',
+      `../${RELEASE_NOTES_DIR}/${UNRELEASED_DIR}`
+    )
+    .requiredOption('--language <language>', 'the language of the release notes to parse', DEFAULT_NOTES_LANGUAGE)
+    .action((options: { [key: string]: any }) => {
+      // @ts-ignore
+      parseNotesProgram({ ...options })
+    })

@@ -1,5 +1,5 @@
 export default {
-    ios: {
-        test: 2
-    }
+  ios: {
+    test: 2
+  }
 }

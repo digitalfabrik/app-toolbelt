@@ -13,38 +13,38 @@ const WORKFLOW_TYPES = [
   'delivery'
 ]
 
-export default (parent: Command) => parent
-  .command('trigger <workflow-type>')
-  .requiredOption('--api-token <api-token>', 'circleci api token')
-  .description(`trigger a workflow in the ci on the main branch`)
-  .action(async (workflowType: string, options: { [key: string]: any }) => {
-    try {
-      if (!WORKFLOW_TYPES.includes(workflowType)) {
-        throw new Error(`Only the following workflow types are supported: ${WORKFLOW_TYPES}`)
-      }
-
-      const postData = {
-        branch: MAIN_BRANCH,
-        parameters: {
-          api_triggered: true,
-          workflow_type: workflowType
+export default (parent: Command) =>
+  parent
+    .command('trigger <workflow-type>')
+    .requiredOption('--api-token <api-token>', 'circleci api token')
+    .description(`trigger a workflow in the ci on the main branch`)
+    .action(async (workflowType: string, options: { [key: string]: any }) => {
+      try {
+        if (!WORKFLOW_TYPES.includes(workflowType)) {
+          throw new Error(`Only the following workflow types are supported: ${WORKFLOW_TYPES}`)
         }
-      }
 
-      const response = await fetch(CIRCLECI_URL, {
-        method: 'POST',
-        body: JSON.stringify(postData),
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'Circle-Token': options.apiToken
+        const postData = {
+          branch: MAIN_BRANCH,
+          parameters: {
+            api_triggered: true,
+            workflow_type: workflowType
+          }
         }
-      })
-      const json = await response.json()
-      console.log(json)
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
-  })
 
+        const response = await fetch(CIRCLECI_URL, {
+          method: 'POST',
+          body: JSON.stringify(postData),
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Circle-Token': options.apiToken
+          }
+        })
+        const json = await response.json()
+        console.log(json)
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    })

@@ -29,12 +29,12 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
       })
 
       // Prepare release notes
-      const platforms = {ios: storeName === 'appstore', android: storeName === 'playstore', web: false}
+      const platforms = { ios: storeName === 'appstore', android: storeName === 'playstore', web: false }
       const source = `../${RELEASE_NOTES_DIR}/${overrideVersionName ?? UNRELEASED_DIR}`
       const releaseNotesPath = `${metadataPath(appName, storeName, targetLanguage)}${
         storeName === 'playstore' ? '/changelogs' : ''
       }`
-      fs.mkdirSync(releaseNotesPath, {recursive: true})
+      fs.mkdirSync(releaseNotesPath, { recursive: true })
 
       const destination = `${releaseNotesPath}/${storeName === 'appstore' ? 'release_notes.txt' : 'default.txt'}`
       //parseNotesProgram({ ...platforms, production: true, language, destination, source, appName })
@@ -44,20 +44,21 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
   })
 }
 
-export default (parent: Command) => parent
-  .command('prepare-metadata')
-  .argument('appName')
-  .argument('storeName')
-  .option(
-    '--override-version-name <override-version-name>',
-    'if specified the release notes will be generated from the specified version name instead of the unreleased notes'
-  )
-  .description('prepare metadata for store')
-  .action((appName: string, storeName: string, options: { [key: string]: any }) => {
-    try {
-      writeMetadata(appName, storeName, options.overrideVersionName)
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
-  })
+export default (parent: Command) =>
+  parent
+    .command('prepare-metadata')
+    .argument('appName')
+    .argument('storeName')
+    .option(
+      '--override-version-name <override-version-name>',
+      'if specified the release notes will be generated from the specified version name instead of the unreleased notes'
+    )
+    .description('prepare metadata for store')
+    .action((appName: string, storeName: string, options: { [key: string]: any }) => {
+      try {
+        writeMetadata(appName, storeName, options.overrideVersionName)
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    })

@@ -79,17 +79,16 @@ export const metadataFromTranslations = (
 
   return storeName === 'appstore'
     ? {
-      name,
-      description,
-      ...storeTranslation
-    }
+        name,
+        description,
+        ...storeTranslation
+      }
     : {
-      title: name,
-      full_description: description,
-      ...storeTranslation
-    }
+        title: name,
+        full_description: description,
+        ...storeTranslation
+      }
 }
 
 export const loadStoreTranslations = (appName: string) =>
   JSON.parse(fs.readFileSync(`../translations/store-translations/${appName}.json`, 'utf-8'))
-
