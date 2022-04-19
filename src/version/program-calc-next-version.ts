@@ -1,4 +1,4 @@
-import { program } from 'commander'
+import { Command } from 'commander'
 import fs from 'fs'
 import path from 'path'
 
@@ -28,7 +28,7 @@ const calculateNewVersion = () => {
   }
 }
 
-program
+export default (parent: Command) => parent
   .command('calc')
   .description('calculate the next version')
   .action(() => {
@@ -43,4 +43,3 @@ program
     }
   })
 
-program.parse(process.argv)

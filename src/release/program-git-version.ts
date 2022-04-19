@@ -1,17 +1,9 @@
 import { Octokit } from '@octokit/rest'
-import { program } from 'commander'
+import { Command } from 'commander'
 
-import { VERSION_FILE, PLATFORMS, tagId, MAIN_BRANCH } from './constants'
-import authenticate from './github-authentication'
-
-program
-  .requiredOption(
-    '--deliverino-private-key <deliverino-private-key>',
-    'private key of the deliverino github app in pem format with base64 encoding'
-  )
-  .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
-  .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-  .requiredOption('--branch <branch>', 'the current branch')
+import { VERSION_FILE, PLATFORMS, MAIN_BRANCH, Platform } from '../constants'
+import { authenticate } from '../github'
+import { tagName } from './git'
 
 type TagOptions = {
   versionName: string
@@ -20,31 +12,31 @@ type TagOptions = {
   repo: string
   commitSha: string
   appOctokit: Octokit
-  platform: string
+  platform: Platform
 }
 
 const createTag = async ({ versionName, versionCode, owner, repo, commitSha, appOctokit, platform }: TagOptions) => {
-  const id = tagId({ versionName, platform })
+  const name = tagName({ versionName, platform })
   const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
 
   const tag = await appOctokit.git.createTag({
     owner,
     repo,
-    tag: id,
+    tag: name,
     message: tagMessage,
     object: commitSha,
     type: 'commit'
   })
   const tagSha = tag.data.sha
-  console.warn(`New tag with id ${id} successfully created.`)
+  console.warn(`New tag with name ${name} successfully created.`)
 
   await appOctokit.git.createRef({
     owner,
     repo,
-    ref: `refs/tags/${id}`,
+    ref: `refs/tags/${name}`,
     sha: tagSha
   })
-  console.warn(`New ref with id ${id} successfully created.`)
+  console.warn(`New ref with name ${name} successfully created.`)
 }
 
 const commitAndTag = async (
@@ -102,16 +94,23 @@ const commitAndTag = async (
   )
 }
 
-program
+export default (parent: Command) => parent
   .command('bump-to <new-version-name> <new-version-code>')
+  .requiredOption(
+    '--deliverino-private-key <deliverino-private-key>',
+    'private key of the deliverino github app in pem format with base64 encoding'
+  )
+  .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
+  .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
+  .requiredOption('--branch <branch>', 'the current branch')
   .description('commits the supplied version name and code to github and tags the commit')
-  .action(async (newVersionName, newVersionCode) => {
+  .action(async (newVersionName, newVersionCode, options: { [key: string]: any }) => {
     try {
       await commitAndTag(newVersionName, newVersionCode, {
-        deliverinoPrivateKey: program.deliverinoPrivateKey,
-        branch: program.branch,
-        owner: program.owner,
-        repo: program.repo
+        deliverinoPrivateKey: options.deliverinoPrivateKey,
+        branch: options.branch,
+        owner: options.owner,
+        repo: options.repo
       })
     } catch (e) {
       console.error(e)
@@ -119,4 +118,3 @@ program
     }
   })
 
-program.parse(process.argv)

@@ -1,4 +1,4 @@
-import { Platform, PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB } from '../core'
+import { Platform, PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB } from '../constants'
 import { DEFAULT_NOTES_LANGUAGE, loadStoreTranslations } from './translation'
 
 const MAX_RELEASE_NOTES_LENGTH = 500

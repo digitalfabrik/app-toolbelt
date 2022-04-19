@@ -1,4 +1,4 @@
-import { program } from 'commander'
+import { Command } from 'commander'
 import JiraApi from 'jira-client'
 
 const JIRA_HOST = 'issues.tuerantuer.org'
@@ -12,13 +12,6 @@ type JiraVersion = {
 type JiraIssue = {
   id: string
 }
-
-program
-  .option('-d, --debug', 'enable extreme logging')
-  .requiredOption('--project-name <project-name>', 'the name of the jira project, e.g. integreat-app')
-  .requiredOption('--access-token <access-token>', 'version name of the new release')
-  .requiredOption('--private-key <privateKey>')
-  .requiredOption('--consumer-key <consumer-key>')
 
 const createRelease = async ({
   newVersionName,
@@ -115,24 +108,26 @@ const createRelease = async ({
   )
 }
 
-program
-  .command('create <new-version-name>')
+export default (parent: Command) => parent
+  .command('jira-create <new-version-name>')
+  .requiredOption('--project-name <project-name>', 'the name of the jira project, e.g. integreat-app')
+  .requiredOption('--access-token <access-token>', 'version name of the new release')
+  .requiredOption('--private-key <privateKey>')
+  .requiredOption('--consumer-key <consumer-key>')
   .description(
     'create a new release with the name <new-version-name> on jira and assign all issues resolved since the last release'
   )
-  .action(async newVersionName => {
+  .action(async (newVersionName, options: { [key: string]: any }) => {
     try {
       await createRelease({
         newVersionName,
-        accessToken: program.accessToken,
-        consumerKey: program.consumerKey,
-        privateKeyBase64: program.privateKey,
-        projectName: program.projectName
+        accessToken: options.accessToken,
+        consumerKey: options.consumerKey,
+        privateKeyBase64: options.privateKey,
+        projectName: options.projectName
       })
     } catch (e) {
       console.error(e)
       process.exit(1)
     }
   })
-
-program.parse(process.argv)

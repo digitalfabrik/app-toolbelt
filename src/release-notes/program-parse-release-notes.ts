@@ -1,4 +1,4 @@
-import { Command, createCommand } from 'commander'
+import { Command } from 'commander'
 import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'path'
@@ -8,7 +8,7 @@ import { formatDevelopmentNotes, formatNotes, isNoteRelevant, NoteType } from '.
 import { DEFAULT_NOTES_LANGUAGE } from './translation'
 import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './paths'
 
-type ParseProgramType = {
+type ParseProgramOptionsType = {
   destination?: string
   source: string
   ios: boolean
@@ -19,7 +19,7 @@ type ParseProgramType = {
   appName?: string
 }
 
-const parseReleaseNotes = ({source, ios, android, web, production, language, appName}: ParseProgramType): string => {
+const parseReleaseNotes = ({source, ios, android, web, production, language, appName}: ParseProgramOptionsType): string => {
   const platforms: Platform[] = [
     android ? PLATFORM_ANDROID : undefined,
     ios ? PLATFORM_IOS : undefined,
@@ -57,13 +57,13 @@ const parseReleaseNotes = ({source, ios, android, web, production, language, app
   return formatDevelopmentNotes({notes: relevantNotes, language, platforms})
 }
 
-const parseNotesProgram = (program: ParseProgramType) => {
+const parseNotesProgram = (options: ParseProgramOptionsType) => {
   try {
-    const notes = parseReleaseNotes({...program})
+    const notes = parseReleaseNotes({...options})
 
-    if (program.destination) {
-      fs.mkdirSync(path.dirname(program.destination), {recursive: true})
-      fs.writeFileSync(program.destination, notes)
+    if (options.destination) {
+      fs.mkdirSync(path.dirname(options.destination), {recursive: true})
+      fs.writeFileSync(options.destination, notes)
     }
 
     // Log to enable bash piping

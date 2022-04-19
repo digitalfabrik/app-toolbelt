@@ -1,19 +1,7 @@
-import { program } from 'commander'
-
-import { tagId } from './constants'
-import authenticate from './github-authentication'
-
-program
-  .requiredOption(
-    '--deliverino-private-key <deliverino-private-key>',
-    'private key of the deliverino github app in pem format with base64 encoding'
-  )
-  .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
-  .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-  .requiredOption('--release-notes <release-notes>', 'the release notes (for the selected platform) as JSON string')
-  .option('--download-links <download-links>', 'the download links of the artifacts (for the selected platform)')
-  .option('--development-release', 'whether the release is a development release which is not delivered to production')
-  .option('--dry-run', 'dry run without actually creating a release on github')
+import { Command } from 'commander'
+import { Platform } from '../constants'
+import { authenticate } from '../github'
+import { tagName } from './git'
 
 type Options = {
   deliverinoPrivateKey: string
@@ -26,7 +14,7 @@ type Options = {
 }
 
 const githubRelease = async (
-  platform: string,
+  platform: Platform,
   newVersionName: string,
   newVersionCode: string,
   { deliverinoPrivateKey, owner, repo, releaseNotes, downloadLinks, developmentRelease, dryRun }: Options
@@ -59,30 +47,38 @@ const githubRelease = async (
   await appOctokit.repos.createRelease({
     owner,
     repo,
-    tag_name: tagId({ versionName: newVersionName, platform }),
+    tag_name: tagName({ versionName: newVersionName, platform }),
     name: releaseName,
     body
   })
 }
 
-program
+export default (parent: Command) => parent
   .command('create <platform> <new-version-name> <new-version-code>')
+  .requiredOption(
+    '--deliverino-private-key <deliverino-private-key>',
+    'private key of the deliverino github app in pem format with base64 encoding'
+  )
+  .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
+  .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
+  .requiredOption('--release-notes <release-notes>', 'the release notes (for the selected platform) as JSON string')
+  .option('--download-links <download-links>', 'the download links of the artifacts (for the selected platform)')
+  .option('--development-release', 'whether the release is a development release which is not delivered to production')
+  .option('--dry-run', 'dry run without actually creating a release on github')
   .description('creates a new release for the specified platform')
-  .action(async (platform, newVersionName, newVersionCode) => {
+  .action(async (platform, newVersionName, newVersionCode, options: { [key: string]: any }) => {
     try {
       await githubRelease(platform, newVersionName, newVersionCode, {
-        deliverinoPrivateKey: program.deliverinoPrivateKey,
-        repo: program.repo,
-        owner: program.owner,
-        developmentRelease: program.developmentRelease,
-        downloadLinks: program.downloadLinks,
-        releaseNotes: program.releaseNotes,
-        dryRun: program.dryRun
+        deliverinoPrivateKey: options.deliverinoPrivateKey,
+        repo: options.repo,
+        owner: options.owner,
+        developmentRelease: options.developmentRelease,
+        downloadLinks: options.downloadLinks,
+        releaseNotes: options.releaseNotes,
+        dryRun: options.dryRun
       })
     } catch (e) {
       console.error(e)
       process.exit(1)
     }
   })
-
-program.parse(process.argv)
