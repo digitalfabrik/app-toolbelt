@@ -1,13 +1,9 @@
 #!/usr/bin/env node 
 
 require('ts-node').register({
-  "ts-node": {
-    "transpileOnly": true,
-    "skipIgnore": true
-  },
-  "compilerOptions": {
-    "module": "commonjs", // Should be changed to ES2020 once stable
-  }
+  "transpileOnly": true,
+  "skipIgnore": true,
+  "compilerOptions": {}
 })
 
 require('../src/start.ts');
