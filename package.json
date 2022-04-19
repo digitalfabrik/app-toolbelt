@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "start": "ts-node src/start.ts",
+    "build": "tsc --build",
     "test": "jest"
   },
   "dependencies": {
