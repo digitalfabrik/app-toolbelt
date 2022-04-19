@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/whitelabel.iml" filepath="$PROJECT_DIR$/whitelabel.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/app-toolbelt.iml" filepath="$PROJECT_DIR$/.idea/app-toolbelt.iml" />
     </modules>
   </component>
 </project>
