@@ -7,9 +7,9 @@ Options:
   -h, --help                                               display help for command
 
 Commands:
-  to-bash <build_config_name> <platform>                   outputs the specified build config as key-value pairs which can be executed by bash
-  to-json <build_config_name> <platform>                   outputs the specified build config as JSON
-  to-properties <build_config_name> <platform>             create and write a new properties file to the stdout
+  to-bash [options] <build-config-name> <platform>         outputs the specified build config as key-value pairs which can be executed by bash
+  to-json [options] <build-config-name> <platform>         outputs the specified build config as JSON
+  to-properties [options] <build-config-name> <platform>   create and write a new properties file to the stdout
   write-xcconfig [options] <build_config_name> <platform>  create and write a new buildConfig.tmp.xcconfig to the output directory
   help [command]                                           display help for command
 "

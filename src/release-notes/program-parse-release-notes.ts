@@ -6,7 +6,7 @@ import { Platform, PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB } from '../const
 import { nonNullablePredicate } from '../util'
 import { formatDevelopmentNotes, formatNotes, isNoteRelevant, NoteType } from './formatting'
 import { DEFAULT_NOTES_LANGUAGE } from './translation'
-import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './paths'
+import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants'
 
 type ParseProgramOptionsType = {
   destination?: string

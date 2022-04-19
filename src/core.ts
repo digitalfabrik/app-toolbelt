@@ -7,7 +7,7 @@ import toJson from './build-config/program-to-json'
 import toProperties from './build-config/program-to-properties'
 import writeXcConfig from './build-config/program-write-xcconfig'
 import calcNextVersion from './version/program-calc-next-version'
-import gitVersion from './release/program-git-version'
+import gitRelease from './release/program-git-release'
 import githubRelease from './release/program-github-release'
 import jiraRelease from './release/program-jira-release'
 import sentryRelease from './release/program-sentry-release'
@@ -39,7 +39,7 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   writeXcConfig(buildConfigCommand)
 
   const releaseCommand = v0.command('release')
-  gitVersion(releaseCommand)
+  gitRelease(releaseCommand)
   githubRelease(releaseCommand)
   jiraRelease(releaseCommand)
   sentryRelease(releaseCommand)

@@ -1,5 +1,5 @@
 import fs from 'fs'
-import { StoreName } from '../constants'
+import { StoreName } from './constants'
 
 export const DEFAULT_NOTES_LANGUAGE = 'de'
 
