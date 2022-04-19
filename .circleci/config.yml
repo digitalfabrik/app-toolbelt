@@ -5,6 +5,7 @@ jobs:
     docker:
       - image: circleci/node:latest
     steps:
+      - checkout
       - run: npm install
       - run: npm run build
       - run: npm run test
