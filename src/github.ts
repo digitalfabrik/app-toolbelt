@@ -68,10 +68,6 @@ export const commitVersion = async (
   branch: string,
   appOctokit: Octokit
 ): Promise<string | undefined> => {
-  if (branch !== MAIN_BRANCH) {
-    throw new Error(`Version bumps are only allowed on the ${MAIN_BRANCH} branch!`)
-  }
-
   const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
 
   const contentBase64 = Buffer.from(JSON.stringify({ versionName, versionCode })).toString('base64')
