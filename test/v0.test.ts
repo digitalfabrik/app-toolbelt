@@ -53,4 +53,8 @@ describe('stability test', () => {
   test('version', () => {
     expect(getCommandOutput(['v0', 'version'])).toMatchSnapshot()
   })
+
+  test('notify', () => {
+    expect(getCommandOutput(['v0', 'notify'])).toMatchSnapshot()
+  })
 })
