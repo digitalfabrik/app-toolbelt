@@ -12,6 +12,7 @@ import githubRelease from './release/program-github-release'
 import jiraRelease from './release/program-jira-release'
 import sentryRelease from './release/program-sentry-release'
 import triggerPipeline from './ci/program-trigger-pipeline'
+import notify from './notify/notify'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   let root = program.version('0.1.0').option('-d, --debug', 'enable extreme logging')
@@ -44,6 +45,9 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
 
   const ciCommand = v0.command('ci')
   triggerPipeline(ciCommand)
+
+  const notifyCommand = v0.command('notify')
+  notify(notifyCommand)
 
   return root
 }
