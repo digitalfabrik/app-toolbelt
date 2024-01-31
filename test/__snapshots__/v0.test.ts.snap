@@ -28,6 +28,18 @@ Commands:
 "
 `;
 
+exports[`stability test notify 1`] = `
+"Usage: whitelabel v0 notify [options] [command]
+
+Options:
+  -h, --help            display help for command
+
+Commands:
+  mattermost [options]  Send a message to a mattermost channel
+  help [command]        display help for command
+"
+`;
+
 exports[`stability test release 1`] = `
 "Usage: whitelabel v0 release [options] [command]
 
@@ -69,6 +81,7 @@ Commands:
   build-config
   release
   ci
+  notify
   help [command]  display help for command
 "
 `;
