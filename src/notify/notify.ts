@@ -11,8 +11,10 @@ export default (parent: Command) => {
     .option('--allow-all-branches', '')
     .description('Send a message to a mattermost channel')
     .action(async (options: { [key: string]: any }) => {
-      if (process.env.CIRCLE_BRANCH != 'main' && !options.allowAllBranches) {
-        console.log('Not on main branch. Skipping.')
+      const isAlwaysAllowedBranch =
+        process.env.CIRCLE_BRANCH == 'main' || process.env.CIRCLE_BRANCH?.startsWith('release')
+      if (!(isAlwaysAllowedBranch || options.allowAllBranches)) {
+        console.log('Not on main or releases-* branch. Skipping.')
         process.exit(0)
       }
 
