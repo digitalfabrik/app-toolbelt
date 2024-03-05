@@ -42,7 +42,9 @@ export default (parent: Command) => {
       })
 
       if (response.status != 200) {
-        console.error('Notification not sent due to an error. Status: $STATUS. Please check the webhook URL')
+        console.error(
+          `Notification not sent due to an error. Status: ${response.status}. ${response.statusText} Please check the webhook URL`
+        )
         process.exit(1)
       }
 
