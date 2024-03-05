@@ -20,7 +20,7 @@ export default (parent: Command) => {
 
       if (!options.message) {
         console.log('No message set. Skipping.')
-        process.exit(1)
+        process.exit(0)
       }
 
       if (!process.env.MM_WEBHOOK) {
