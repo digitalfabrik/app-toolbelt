@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { MAIN_BRANCH, Platform, PLATFORMS, VERSION_FILE } from './constants'
+import { Platform, PLATFORMS, VERSION_FILE } from './constants'
 
 export const authenticate = async ({
   deliverinoPrivateKey,
@@ -106,41 +106,48 @@ export const createTags = async (
   )
 }
 
+const generateReleaseNotes = async (
+  owner: string,
+  repo: string,
+  appOctokit: Octokit,
+  tagName: string
+): Promise<string> => {
+  try {
+    const response = await appOctokit.request(`POST /repos/${owner}/${repo}/releases/generate-notes`, {
+      owner,
+      repo,
+      tag_name: tagName,
+      target_commitish: 'main',
+      headers: {
+        'X-GitHub-Api-Version': '2022-11-28'
+      }
+    })
+    return response.data.body
+  } catch (e) {
+    throw new Error("Couldn't get release notes")
+  }
+}
+
 export const createGithubRelease = async (
   platform: Platform,
   newVersionName: string,
   newVersionCode: number,
   owner: string,
   repo: string,
-  releaseNotes: string,
-  downloadLinks: string,
-  developmentRelease: boolean,
-  dryRun: boolean,
-  appOctokit: Octokit
+  prerelease: string,
+  appOctokit: Octokit,
+  predefinedReleaseNotes?: string
 ) => {
-  const releaseName = `[${platform}${
-    developmentRelease ? ' development release' : ''
-  }] ${newVersionName} - ${newVersionCode}`
-  console.warn('Creating release with name ', releaseName)
-
-  const developmentMessage = developmentRelease
-    ? 'This release is only delivered to development and not yet visible for users.\n\n'
-    : ''
-
-  const body = `${developmentMessage}${JSON.parse(releaseNotes)}${
-    downloadLinks ? `\nArtifacts:\n${downloadLinks}` : ''
-  }`
-  console.warn('and body ', body)
-
-  if (dryRun) {
-    return
-  }
+  const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
+  const tagName = versionTagName({ versionName: newVersionName, platform })
 
   await appOctokit.repos.createRelease({
     owner,
     repo,
-    tag_name: versionTagName({ versionName: newVersionName, platform }),
+    tag_name: tagName,
+    prerelease: prerelease === 'true',
+    make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
-    body
+    body: predefinedReleaseNotes ?? (await generateReleaseNotes(owner, repo, appOctokit, tagName))
   })
 }
