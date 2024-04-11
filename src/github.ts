@@ -106,21 +106,19 @@ export const createTags = async (
   )
 }
 
-const generateReleaseNotes = async (
+const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string => `POST /repos/${owner}/${repo}/releases/generate-notes`
+
+const generateReleaseNotesFromGithubEndpoint = async (
   owner: string,
   repo: string,
   appOctokit: Octokit,
   tagName: string
 ): Promise<string> => {
   try {
-    const response = await appOctokit.request(`POST /repos/${owner}/${repo}/releases/generate-notes`, {
+    const response = await appOctokit.request(getGithubApiUrlForReleaseNotes(owner, repo), {
       owner,
       repo,
       tag_name: tagName,
-      target_commitish: 'main',
-      headers: {
-        'X-GitHub-Api-Version': '2022-11-28'
-      }
     })
     return response.data.body
   } catch (e) {
@@ -132,22 +130,24 @@ export const createGithubRelease = async (
   platform: Platform,
   newVersionName: string,
   newVersionCode: number,
+  appOctokit: Octokit,
   owner: string,
   repo: string,
-  prerelease: string,
-  appOctokit: Octokit,
+  prerelease: boolean,
+  shouldUsePredefinedReleaseNotes: boolean,
   predefinedReleaseNotes?: string
 ) => {
   const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
+
   await appOctokit.repos.createRelease({
     owner,
     repo,
     tag_name: tagName,
-    prerelease: prerelease === 'true',
+    prerelease,
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
-    body: predefinedReleaseNotes ?? (await generateReleaseNotes(owner, repo, appOctokit, tagName))
+    body: shouldUsePredefinedReleaseNotes && predefinedReleaseNotes ? predefinedReleaseNotes : (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName))
   })
 }
