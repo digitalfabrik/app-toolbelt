@@ -133,7 +133,7 @@ export const createGithubRelease = async (
   appOctokit: Octokit,
   owner: string,
   repo: string,
-  prerelease: boolean,
+  productionRelease: boolean,
   shouldUsePredefinedReleaseNotes: boolean,
   predefinedReleaseNotes?: string
 ) => {
@@ -141,13 +141,14 @@ export const createGithubRelease = async (
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
 
-  await appOctokit.repos.createRelease({
+  const release = await appOctokit.repos.createRelease({
     owner,
     repo,
     tag_name: tagName,
-    prerelease,
+    prerelease: !productionRelease,
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
     body: shouldUsePredefinedReleaseNotes && predefinedReleaseNotes ? predefinedReleaseNotes : (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName))
   })
+  console.log(release.data.id)
 }
