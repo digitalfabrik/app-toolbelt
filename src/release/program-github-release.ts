@@ -10,13 +10,12 @@ export default (parent: Command) =>
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-    .requiredOption('--release-notes <release-notes>', 'the release notes (for the selected platform) as JSON string')
-    .option('--download-links <download-links>', 'the download links of the artifacts (for the selected platform)')
+    .requiredOption('--production-release <production-release>', 'whether this is a production release or not')
+    .requiredOption('--should-use-predefined-release-notes <should-use-predefined-release-notes>', 'whether predefined release notes should be used or not. Release notes have to be passed if true.')
     .option(
-      '--development-release',
-      'whether the release is a development release which is not delivered to production'
+      '--release-notes <release-notes>',
+      'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated'
     )
-    .option('--dry-run', 'dry run without actually creating a release on github')
     .description('creates a new release for the specified platform')
     .action(async (platform, newVersionName, newVersionCode, options: { [key: string]: any }) => {
       try {
@@ -35,13 +34,12 @@ export default (parent: Command) =>
           platform,
           newVersionName,
           newVersionCode,
+          appOctokit,
           options.owner,
           options.repo,
-          options.developmentRelease,
-          options.downloadLinks,
-          options.releaseNotes,
-          options.dryRun,
-          appOctokit
+          options.productionRelease === 'true',
+          options.shouldUsePredefinedReleaseNotes === 'true',
+          options.releaseNotes
         )
       } catch (e) {
         console.error(e)
