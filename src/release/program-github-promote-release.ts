@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest'
 import { GetResponseTypeFromEndpointMethod } from '@octokit/types'
-import { program } from 'commander'
+import {Command} from 'commander'
 import { authenticate } from '../github'
 
 const octokit = new Octokit()
@@ -46,7 +46,8 @@ const removePreRelease = async ({ deliverinoPrivateKey, owner, repo, platform }:
   }
 }
 
-program
+export default (parent: Command) =>
+ parent
   .command('promote')
   .description('Remove pre-release flag from the latest release')
   .requiredOption(
@@ -64,5 +65,3 @@ program
       process.exit(1)
     }
   })
-
-program.parse(process.argv)

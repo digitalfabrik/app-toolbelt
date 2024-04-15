@@ -1,4 +1,4 @@
-import { program } from 'commander'
+import {Command} from 'commander'
 import fs from 'node:fs'
 import { authenticate } from '../github'
 
@@ -30,7 +30,8 @@ const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, file
       })
 }
 
-program
+export default (parent: Command) =>
+ parent
   .command('upload')
   .description('Upload a release asset to github')
   .requiredOption(
@@ -49,5 +50,3 @@ program
       process.exit(1)
     }
   })
-
-program.parse(process.argv)

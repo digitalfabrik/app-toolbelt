@@ -9,6 +9,8 @@ import writeXcConfig from './build-config/program-write-xcconfig'
 import calcNextVersion from './version/program-calc-next-version'
 import gitRelease from './release/program-git-release'
 import githubRelease from './release/program-github-release'
+import githubReleaseAssets from './release/program-github-release-assets'
+import githubPromoteRelease from './release/program-github-promote-release'
 import jiraRelease from './release/program-jira-release'
 import sentryRelease from './release/program-sentry-release'
 import triggerPipeline from './ci/program-trigger-pipeline'
@@ -40,6 +42,8 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   const releaseCommand = v0.command('release')
   gitRelease(releaseCommand)
   githubRelease(releaseCommand)
+  githubReleaseAssets(releaseCommand)
+  githubPromoteRelease(releaseCommand)
   jiraRelease(releaseCommand)
   sentryRelease(releaseCommand)
 
