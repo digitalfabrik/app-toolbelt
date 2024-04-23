@@ -10,8 +10,8 @@ export default (parent: Command) =>
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-    .requiredOption('--production-release <production-release>', 'whether this is a production release or not')
-    .requiredOption('--should-use-predefined-release-notes <should-use-predefined-release-notes>', 'whether predefined release notes should be used or not. Release notes have to be passed if true.')
+    .option('--production-release', 'whether this is a production release or not. If unset false')
+    .option('--should-use-predefined-release-notes', 'whether predefined release notes should be used or not. Release notes have to be passed if true.')
     .option(
       '--release-notes <release-notes>',
       'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated'
@@ -37,8 +37,8 @@ export default (parent: Command) =>
           appOctokit,
           options.owner,
           options.repo,
-          options.productionRelease === 'true',
-          options.shouldUsePredefinedReleaseNotes === 'true',
+          options.productionRelease,
+          options.shouldUsePredefinedReleaseNotes,
           options.releaseNotes
         )
       } catch (e) {
