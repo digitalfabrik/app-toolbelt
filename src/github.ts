@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORMS, VERSION_FILE } from './constants'
+import {Platform, PLATFORMS, VERSION_FILE} from './constants'
 
 export const authenticate = async ({
   deliverinoPrivateKey,
@@ -95,10 +95,12 @@ export const createTags = async (
   commitSha: string,
   owner: string,
   repo: string,
-  appOctokit: Octokit
+  appOctokit: Octokit,
+  predefinedPlatform?: Platform
 ) => {
+  const platforms = predefinedPlatform ? [predefinedPlatform] : PLATFORMS
   await Promise.all(
-    PLATFORMS.map(platform => {
+    platforms.map(platform => {
       const tagName = versionTagName({ versionName, platform })
       const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
       return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
