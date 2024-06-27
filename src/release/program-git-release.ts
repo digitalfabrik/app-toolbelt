@@ -11,6 +11,7 @@ export default (parent: Command) =>
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .requiredOption('--branch <branch>', 'the current branch')
+    .option('--platform <platform>', 'define a particular platform for the tag. If unset tags for all platforms will be created')
     .description('commits the supplied version name and code to github and tags the commit')
     .action(async (newVersionName, newVersionCode, options: { [key: string]: any }) => {
       try {
@@ -38,7 +39,7 @@ export default (parent: Command) =>
           throw new Error(`Failed to commit!`)
         }
 
-        await createTags(newVersionName, versionCode, commitSha, options.owner, options.repo, appOctokit)
+        await createTags(newVersionName, versionCode, commitSha, options.owner, options.repo, appOctokit, options.platform)
       } catch (e) {
         console.error(e)
         process.exit(1)
