@@ -95,10 +95,12 @@ export const createTags = async (
   commitSha: string,
   owner: string,
   repo: string,
-  appOctokit: Octokit
+  appOctokit: Octokit,
+  predefinedPlatforms?: Platform[]
 ) => {
+  const platforms = predefinedPlatforms ? predefinedPlatforms : PLATFORMS
   await Promise.all(
-    PLATFORMS.map(platform => {
+    platforms.map(platform => {
       const tagName = versionTagName({ versionName, platform })
       const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
       return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
@@ -106,7 +108,8 @@ export const createTags = async (
   )
 }
 
-const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string => `POST /repos/${owner}/${repo}/releases/generate-notes`
+const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string =>
+  `POST /repos/${owner}/${repo}/releases/generate-notes`
 
 const generateReleaseNotesFromGithubEndpoint = async (
   owner: string,
@@ -118,7 +121,7 @@ const generateReleaseNotesFromGithubEndpoint = async (
     const response = await appOctokit.request(getGithubApiUrlForReleaseNotes(owner, repo), {
       owner,
       repo,
-      tag_name: tagName,
+      tag_name: tagName
     })
     return response.data.body
   } catch (e) {
@@ -140,7 +143,6 @@ export const createGithubRelease = async (
   const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
-
   const release = await appOctokit.repos.createRelease({
     owner,
     repo,
@@ -148,7 +150,10 @@ export const createGithubRelease = async (
     prerelease: !productionRelease,
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
-    body: shouldUsePredefinedReleaseNotes && predefinedReleaseNotes ? predefinedReleaseNotes : (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName))
+    body:
+      shouldUsePredefinedReleaseNotes && predefinedReleaseNotes
+        ? predefinedReleaseNotes
+        : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName)
   })
   console.log(release.data.id)
 }
