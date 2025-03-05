@@ -51,7 +51,6 @@ Commands:
   create [options] <platform> <new-version-name> <new-version-code>            creates a new release for the specified platform
   upload [options]                                                             Upload a release asset to github
   promote [options]                                                            Remove pre-release flag from the latest release
-  jira-create [options] <new-version-name>                                     create a new release with the name <new-version-name> on jira and assign all issues resolved since the last release
   sentry-create [options] <package-name> <version-name> <sourcemap-directory>  create a new release on sentry. This file uses the configuration from ./.sentryclirc
   help [command]                                                               display help for command
 "

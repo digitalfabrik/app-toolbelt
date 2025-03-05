@@ -1,6 +1,6 @@
 import { Octokit } from '@octokit/rest'
 import { GetResponseTypeFromEndpointMethod } from '@octokit/types'
-import {Command} from 'commander'
+import { Command } from 'commander'
 import { authenticate } from '../github'
 
 const octokit = new Octokit()
@@ -47,21 +47,21 @@ const removePreRelease = async ({ deliverinoPrivateKey, owner, repo, platform }:
 }
 
 export default (parent: Command) =>
- parent
-  .command('promote')
-  .description('Remove pre-release flag from the latest release')
-  .requiredOption(
-    '--deliverino-private-key <deliverino-private-key>',
-    'private key of the deliverino github app in pem format with base64 encoding'
-  )
-  .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-  .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-  .requiredOption('--platform <platform>')
-  .action(async (options: Options) => {
-    try {
-      await removePreRelease(options)
-    } catch (e) {
-      console.error(e)
-      process.exit(1)
-    }
-  })
+  parent
+    .command('promote')
+    .description('Remove pre-release flag from the latest release')
+    .requiredOption(
+      '--deliverino-private-key <deliverino-private-key>',
+      'private key of the deliverino github app in pem format with base64 encoding'
+    )
+    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
+    .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
+    .requiredOption('--platform <platform>')
+    .action(async (options: Options) => {
+      try {
+        await removePreRelease(options)
+      } catch (e) {
+        console.error(e)
+        process.exit(1)
+      }
+    })
