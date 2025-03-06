@@ -11,7 +11,10 @@ export default (parent: Command) =>
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .option('--production-release', 'whether this is a production release or not. If unset false')
-    .option('--should-use-predefined-release-notes', 'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false')
+    .option(
+      '--should-use-predefined-release-notes',
+      'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false'
+    )
     .option(
       '--release-notes <release-notes>',
       'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated'

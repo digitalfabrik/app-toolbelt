@@ -11,7 +11,6 @@ import gitRelease from './release/program-git-release'
 import githubRelease from './release/program-github-release'
 import githubReleaseAssets from './release/program-github-release-assets'
 import githubPromoteRelease from './release/program-github-promote-release'
-import jiraRelease from './release/program-jira-release'
 import sentryRelease from './release/program-sentry-release'
 import triggerPipeline from './ci/program-trigger-pipeline'
 import notify from './notify/notify'
@@ -44,7 +43,6 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   githubRelease(releaseCommand)
   githubReleaseAssets(releaseCommand)
   githubPromoteRelease(releaseCommand)
-  jiraRelease(releaseCommand)
   sentryRelease(releaseCommand)
 
   const ciCommand = v0.command('ci')
