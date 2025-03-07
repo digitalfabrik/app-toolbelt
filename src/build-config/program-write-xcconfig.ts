@@ -15,7 +15,7 @@ export default (parent: Command) =>
     .action((buildConfigName, platform, options: { [key: string]: any }) => {
       try {
         const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
-        const xcconfig = asKeyValues(buildConfig, buildConfigName, platform)
+        const xcconfig = asKeyValues(buildConfig, buildConfigName)
         fs.writeFileSync(`${options.directory}/buildConfig.tmp.xcconfig`, xcconfig)
       } catch (e) {
         console.error(e)

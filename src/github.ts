@@ -26,7 +26,7 @@ export const authenticate = async ({
 }
 
 type ReleaseInformation = {
-  platform: typeof PLATFORMS[number]
+  platform: (typeof PLATFORMS)[number]
   versionName: string
 }
 
