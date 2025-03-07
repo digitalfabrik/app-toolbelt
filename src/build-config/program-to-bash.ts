@@ -13,6 +13,6 @@ export default (parent: Command) =>
     .description('outputs the specified build config as key-value pairs which can be executed by bash')
     .action((buildConfigName, platform, options: { [key: string]: any }) => {
       const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
-      const bash = asKeyValues(buildConfig, buildConfigName, platform, false, true)
+      const bash = asKeyValues(buildConfig, buildConfigName, false, true)
       console.log(bash)
     })

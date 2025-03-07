@@ -1,5 +1,5 @@
 import decamelize from 'decamelize'
-import flat from 'flat'
+import { flatten } from 'flat'
 import { Platform, PLATFORMS } from '../constants'
 import path from 'path'
 
@@ -50,11 +50,10 @@ export const loadBuildConfig = (
 export const asKeyValues = (
   buildConfig: Record<string, unknown>,
   buildConfigName: string,
-  platform: BuildConfigPlatformType,
   spaces = true,
   quotes = false
 ) => {
-  const xcconfigOptions = flat<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
+  const xcconfigOptions = flatten<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
     delimiter: '_',
     // Dashes are not supported in keys in xcconfigs and android resources
     transformKey: key => decamelize(key).toUpperCase().replace('-', '_')

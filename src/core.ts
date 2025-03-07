@@ -1,4 +1,4 @@
-import { program, CommanderError } from 'commander'
+import { CommanderError, Command } from 'commander'
 import parseReleaseNotes from './release-notes/program-parse-release-notes'
 import moveToProgram from './release-notes/program-move-to'
 import prepareMetadata from './release-notes/program-prepare-metadata'
@@ -16,7 +16,7 @@ import triggerPipeline from './ci/program-trigger-pipeline'
 import notify from './notify/notify'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
-  let root = program.version('0.1.0').option('-d, --debug', 'enable extreme logging')
+  let root = new Command().version('0.1.0').option('-d, --debug', 'enable extreme logging')
 
   if (exitOverride) {
     root.exitOverride(exitOverride)
