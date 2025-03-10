@@ -1,4 +1,4 @@
-import { Platform, PLATFORMS } from './constants'
+import { Platform, PLATFORMS } from './constants.js'
 
 export const nonNullablePredicate = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 

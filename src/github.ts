@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORMS, VERSION_FILE } from './constants'
+import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
 
 export const authenticate = async ({
   deliverinoPrivateKey,

@@ -1,6 +1,6 @@
 import decamelize from 'decamelize'
 import { flatten } from 'flat'
-import { Platform, PLATFORMS } from '../constants'
+import { Platform, PLATFORMS } from '../constants.js'
 import path from 'path'
 
 export type BuildConfigPlatformType = Platform | 'common'
@@ -50,6 +50,7 @@ export const loadBuildConfig = (
 export const asKeyValues = (
   buildConfig: Record<string, unknown>,
   buildConfigName: string,
+  platform: BuildConfigPlatformType,
   spaces = true,
   quotes = false
 ) => {

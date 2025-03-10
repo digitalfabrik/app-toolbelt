@@ -1,6 +1,6 @@
 import fs from 'fs'
 import { Command } from 'commander'
-import { asKeyValues, loadBuildConfig } from './loader'
+import { asKeyValues, loadBuildConfig } from './loader.js'
 
 export default (parent: Command) =>
   parent
@@ -15,7 +15,7 @@ export default (parent: Command) =>
     .action((buildConfigName, platform, options: { [key: string]: any }) => {
       try {
         const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
-        const xcconfig = asKeyValues(buildConfig, buildConfigName)
+        const xcconfig = asKeyValues(buildConfig, buildConfigName, platform)
         fs.writeFileSync(`${options.directory}/buildConfig.tmp.xcconfig`, xcconfig)
       } catch (e) {
         console.error(e)
