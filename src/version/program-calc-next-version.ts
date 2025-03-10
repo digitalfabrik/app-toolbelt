@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import fs from 'fs'
 import path from 'path'
 
-import { VERSION_FILE } from '../constants'
+import { VERSION_FILE } from '../constants.js'
 
 const calculateNewVersion = () => {
   const versionFile = fs.readFileSync(VERSION_FILE, 'utf-8')

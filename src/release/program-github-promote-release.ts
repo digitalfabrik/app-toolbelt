@@ -1,7 +1,7 @@
 import { Octokit } from '@octokit/rest'
 import { GetResponseTypeFromEndpointMethod } from '@octokit/types'
 import { Command } from 'commander'
-import { authenticate } from '../github'
+import { authenticate } from '../github.js'
 
 const octokit = new Octokit()
 type Releases = GetResponseTypeFromEndpointMethod<typeof octokit.repos.listReleases>

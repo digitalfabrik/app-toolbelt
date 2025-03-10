@@ -1,22 +1,22 @@
-import { program, CommanderError } from 'commander'
-import parseReleaseNotes from './release-notes/program-parse-release-notes'
-import moveToProgram from './release-notes/program-move-to'
-import prepareMetadata from './release-notes/program-prepare-metadata'
-import toBash from './build-config/program-to-bash'
-import toJson from './build-config/program-to-json'
-import toProperties from './build-config/program-to-properties'
-import writeXcConfig from './build-config/program-write-xcconfig'
-import calcNextVersion from './version/program-calc-next-version'
-import gitRelease from './release/program-git-release'
-import githubRelease from './release/program-github-release'
-import githubReleaseAssets from './release/program-github-release-assets'
-import githubPromoteRelease from './release/program-github-promote-release'
-import sentryRelease from './release/program-sentry-release'
-import triggerPipeline from './ci/program-trigger-pipeline'
-import notify from './notify/notify'
+import { CommanderError, Command } from 'commander'
+import parseReleaseNotes from './release-notes/program-parse-release-notes.js'
+import moveToProgram from './release-notes/program-move-to.js'
+import prepareMetadata from './release-notes/program-prepare-metadata.js'
+import toBash from './build-config/program-to-bash.js'
+import toJson from './build-config/program-to-json.js'
+import toProperties from './build-config/program-to-properties.js'
+import writeXcConfig from './build-config/program-write-xcconfig.js'
+import calcNextVersion from './version/program-calc-next-version.js'
+import gitRelease from './release/program-git-release.js'
+import githubRelease from './release/program-github-release.js'
+import githubReleaseAssets from './release/program-github-release-assets.js'
+import githubPromoteRelease from './release/program-github-promote-release.js'
+import sentryRelease from './release/program-sentry-release.js'
+import triggerPipeline from './ci/program-trigger-pipeline.js'
+import notify from './notify/notify.js'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
-  let root = program.version('0.1.0').option('-d, --debug', 'enable extreme logging')
+  let root = new Command().version('0.1.0').option('-d, --debug', 'enable extreme logging')
 
   if (exitOverride) {
     root.exitOverride(exitOverride)

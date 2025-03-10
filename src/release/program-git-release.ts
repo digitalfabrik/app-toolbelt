@@ -1,7 +1,7 @@
 import { Command } from 'commander'
-import { authenticate, commitVersion, createTags } from '../github'
-import { Platform, PLATFORMS } from '../constants'
-import { getPlatformsFromString } from '../util'
+import { authenticate, commitVersion, createTags } from '../github.js'
+import { Platform, PLATFORMS } from '../constants.js'
+import { getPlatformsFromString } from '../util.js'
 
 export default (parent: Command) =>
   parent

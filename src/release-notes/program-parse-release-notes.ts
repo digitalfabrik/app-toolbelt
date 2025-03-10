@@ -2,11 +2,11 @@ import { Command } from 'commander'
 import fs from 'fs'
 import yaml from 'js-yaml'
 import path from 'path'
-import { Platform, PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB } from '../constants'
-import { nonNullablePredicate } from '../util'
-import { formatDevelopmentNotes, formatNotes, isNoteRelevant, NoteType } from './formatting'
-import { DEFAULT_NOTES_LANGUAGE } from './translation'
-import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants'
+import { Platform, PLATFORM_ANDROID, PLATFORM_IOS, PLATFORM_WEB } from '../constants.js'
+import { nonNullablePredicate } from '../util.js'
+import { formatDevelopmentNotes, formatNotes, isNoteRelevant, NoteType } from './formatting.js'
+import { DEFAULT_NOTES_LANGUAGE } from './translation.js'
+import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 
 type ParseProgramOptionsType = {
   destination?: string

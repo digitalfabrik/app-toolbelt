@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { authenticate, createGithubRelease } from '../github'
+import { authenticate, createGithubRelease } from '../github.js'
 
 export default (parent: Command) =>
   parent

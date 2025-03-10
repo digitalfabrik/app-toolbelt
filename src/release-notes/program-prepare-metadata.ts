@@ -1,8 +1,8 @@
 import { Command } from 'commander'
-import { StoreName } from './constants'
-import { languageMap, loadStoreTranslations, metadataFromTranslations } from './translation'
+import { StoreName } from './constants.js'
+import { languageMap, loadStoreTranslations, metadataFromTranslations } from './translation.js'
 import fs from 'fs'
-import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants'
+import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 
 const metadataPath = (appName: string, storeName: StoreName, languageCode: string) =>
   `../native/${storeName === 'appstore' ? 'ios' : 'android'}/fastlane/${appName}/metadata/${languageCode}`

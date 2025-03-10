@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import fs from 'node:fs'
-import { authenticate } from '../github'
+import { authenticate } from '../github.js'
 
 type Options = {
   deliverinoPrivateKey: string
