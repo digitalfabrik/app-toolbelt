@@ -11,6 +11,7 @@
     "start": "tsx src/start.ts",
     "build": "tsc --build",
     "test": "node --experimental-vm-modules $(yarn bin jest)",
+    "test:updateSnapshot": "NODE_OPTIONS='--experimental-vm-modules' npx jest test/v0.test.ts -u",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write ."
   },
