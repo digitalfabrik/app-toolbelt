@@ -10,7 +10,7 @@
   "scripts": {
     "start": "tsx src/start.ts",
     "build": "tsc --build",
-    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test": "node --experimental-vm-modules $(yarn bin jest)",
     "prettier:check": "prettier --check .",
     "prettier:fix": "prettier --write ."
   },
