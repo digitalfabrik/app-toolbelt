@@ -50,8 +50,7 @@ Commands:
   create [options] <platform> <new-version-name> <new-version-code>            creates a new release for the specified platform
   upload [options]                                                             Upload a release asset to github
   promote [options]                                                            Remove pre-release flag from the latest release
-  sentry-create [options] <package-name> <version-name> <sourcemap-directory>  create a new release on sentry. This file uses the configuration from
-                                                                               ./.sentryclirc
+  sentry-create [options] <package-name> <version-name> <sourcemap-directory>  create a new release on sentry. This file uses the configuration from ./.sentryclirc
   help [command]                                                               display help for command
 "
 `;
@@ -63,8 +62,7 @@ Options:
   -h, --help                                        display help for command
 
 Commands:
-  parse-release-notes [options]                     parse the release notes and outputs the release notes as JSON string and writes them to the
-                                                    specified file
+  parse-release-notes [options]                     parse the release notes and outputs the release notes as JSON string and writes them to the specified file
   move-to [options] <new-version-name>              move the release notes in 'unreleased' to a new subdirectory <new-version-name>
   prepare-metadata [options] <appName> <storeName>  prepare metadata for store
   help [command]                                    display help for command
