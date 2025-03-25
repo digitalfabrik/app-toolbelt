@@ -2,18 +2,23 @@ import decamelize from 'decamelize'
 import { flatten } from 'flat'
 import { Platform, PLATFORMS } from '../constants.js'
 import path from 'path'
+import { pathToFileURL } from 'url'
 
 export type BuildConfigPlatformType = Platform | 'common'
 const PLATFORM_COMMON: BuildConfigPlatformType = 'common'
 const BUILD_CONFIG_PLATFORMS: BuildConfigPlatformType[] = [...PLATFORMS, PLATFORM_COMMON]
 
-const findBuildConfigDirectoryInParent = (buildConfigName: string, buildConfigDirectory: string): any | null => {
+const findBuildConfigDirectoryInParent = async (
+  buildConfigName: string,
+  buildConfigDirectory: string
+): Promise<any | null> => {
   let currentDirectory = process.cwd()
 
   for (let i = 0; i < 8; i++) {
     let buildConfigPath = `${currentDirectory}/${buildConfigDirectory}/${buildConfigName}`
     try {
-      return require(buildConfigPath).default
+      const module = await import(buildConfigPath)
+      return module.default
     } catch (e) {
       currentDirectory = path.resolve(currentDirectory, '..')
     }
@@ -22,11 +27,11 @@ const findBuildConfigDirectoryInParent = (buildConfigName: string, buildConfigDi
   return null
 }
 
-export const loadBuildConfig = (
+export const loadBuildConfig = async (
   buildConfigName: string | null | undefined,
   platform: BuildConfigPlatformType,
   buildConfigDirectory: string
-): Record<string, unknown> => {
+): Promise<Record<string, unknown>> => {
   if (!buildConfigName) {
     throw Error('No BUILD_CONFIG_NAME supplied!')
   }
@@ -35,7 +40,7 @@ export const loadBuildConfig = (
     throw Error(`Invalid platform supplied: ${platform}`)
   }
 
-  const buildConfig = findBuildConfigDirectoryInParent(buildConfigName, buildConfigDirectory)
+  const buildConfig = await findBuildConfigDirectoryInParent(buildConfigName, buildConfigDirectory)
 
   if (!buildConfig) {
     throw Error(`Invalid BUILD_CONFIG_NAME supplied: ${buildConfigName}`)

@@ -1,5 +1,7 @@
 {
   "include": ["src/**/*"],
+  "transpileOnly": true,
+  "skipIgnore": true,
   "compilerOptions": {
     "baseUrl": "./src",
     "outDir": "dist",
