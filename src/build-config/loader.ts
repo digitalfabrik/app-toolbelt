@@ -2,7 +2,6 @@ import decamelize from 'decamelize'
 import { flatten } from 'flat'
 import { Platform, PLATFORMS } from '../constants.js'
 import path from 'path'
-import { pathToFileURL } from 'url'
 
 export type BuildConfigPlatformType = Platform | 'common'
 const PLATFORM_COMMON: BuildConfigPlatformType = 'common'
