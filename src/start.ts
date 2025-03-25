@@ -1,3 +1,3 @@
-import buildCommand from './core'
+import buildCommand from './core.js'
 
 buildCommand().parse(process.argv)

@@ -1,4 +1,4 @@
-import buildCommand from '../src/core'
+import buildCommand from '../src/core.js'
 import { CommanderError } from 'commander'
 
 const getCommandOutput = (args: readonly string[]) => {

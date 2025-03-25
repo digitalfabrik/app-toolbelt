@@ -22,8 +22,7 @@ Options:
   -h, --help                         display help for command
 
 Commands:
-  trigger [options] <workflow-type>  trigger a workflow in the ci on the main
-                                     branch
+  trigger [options] <workflow-type>  trigger a workflow in the ci on the main branch
   help [command]                     display help for command
 "
 `;

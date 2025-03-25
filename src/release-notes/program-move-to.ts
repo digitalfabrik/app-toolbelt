@@ -1,6 +1,6 @@
 import { Command, createCommand } from 'commander'
-import { authenticate } from '../github'
-import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants'
+import { authenticate } from '../github.js'
+import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 
 type Options = {
   newVersionName: string

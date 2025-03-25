@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { asKeyValues, loadBuildConfig } from './loader'
+import { asKeyValues, loadBuildConfig } from './loader.js'
 
 export default (parent: Command) =>
   parent
