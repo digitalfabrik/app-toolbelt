@@ -26,8 +26,7 @@ const getCommandOutput = (args: readonly string[]) => {
     }
   }
 
-  const normalizedOutput = output.replace(/\s+/g, ' ').trim()
-  return normalizedOutput
+  return output.replace(/\s+/g, ' ').trim()
 }
 
 describe('stability test', () => {
