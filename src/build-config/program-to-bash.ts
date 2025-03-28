@@ -11,8 +11,8 @@ export default (parent: Command) =>
       './build-configs'
     )
     .description('outputs the specified build config as key-value pairs which can be executed by bash')
-    .action((buildConfigName, platform, options: { [key: string]: any }) => {
-      const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
+    .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
+      const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
       const bash = asKeyValues(buildConfig, buildConfigName, platform, false, true)
       console.log(bash)
     })

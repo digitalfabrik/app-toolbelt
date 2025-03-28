@@ -8,7 +8,7 @@
     "app-toolbelt": "bin/app-toolbelt"
   },
   "scripts": {
-    "start": "tsx src/start.ts",
+    "start": "node --import 'data:text/javascript,import { register } from \"node:module\"; import { pathToFileURL } from \"node:url\"; register(\"ts-node/esm\", pathToFileURL(\"./\"));' src/start.ts",
     "build": "tsc --build",
     "test": "node --experimental-vm-modules $(yarn bin jest)",
     "test:updateSnapshot": "NODE_OPTIONS='--experimental-vm-modules' npx jest test/v0.test.ts -u",
