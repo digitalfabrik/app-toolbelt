@@ -14,8 +14,8 @@ export default (parent: Command) =>
     .description('create and write a new buildConfig.tmp.xcconfig to the output directory')
     .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
       try {
-        const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
-        const xcconfig = asKeyValues(await buildConfig, buildConfigName, platform)
+        const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
+        const xcconfig = asKeyValues(buildConfig, buildConfigName, platform)
         fs.writeFileSync(`${options.directory}/buildConfig.tmp.xcconfig`, xcconfig)
       } catch (e) {
         console.error(e)

@@ -13,8 +13,8 @@ export default (parent: Command) =>
     .description('create and write a new properties file to the stdout')
     .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
       try {
-        const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
-        const properties = asKeyValues(await buildConfig, buildConfigName, platform)
+        const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
+        const properties = asKeyValues(buildConfig, buildConfigName, platform)
         console.log(properties)
       } catch (e) {
         console.error(e)

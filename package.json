@@ -29,7 +29,8 @@
     "node-fetch": "^3.3.2",
     "oauth": "^0.10.0",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "tsx": "^4.19.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.26.9",
@@ -38,7 +39,6 @@
     "@types/node-fetch": "^2.6.12",
     "jest": "^29.7.0",
     "prettier": "^3.5.3",
-    "ts-jest": "^29.2.6",
-    "tsx": "^4.19.3"
+    "ts-jest": "^29.2.6"
   }
 }
