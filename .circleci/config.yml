@@ -9,9 +9,6 @@ jobs:
       - run: npm install
       - run: npm run build
       - run: npm run test
-      - run:
-          name: Installing ts-node
-          command: npm install --no-save ts-node
 
 workflows:
   build_and_test:
