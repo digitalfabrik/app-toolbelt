@@ -11,7 +11,7 @@ export default (parent: Command) =>
       './build-configs'
     )
     .description('outputs the specified build config as JSON')
-    .action((buildConfigName, platform, options: { [key: string]: any }) => {
-      const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
+    .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
+      const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
       console.log(JSON.stringify(buildConfig))
     })

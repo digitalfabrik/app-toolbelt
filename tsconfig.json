@@ -1,9 +1,6 @@
 {
   "include": ["src/**/*"],
-  "transpileOnly": true,
-  "skipIgnore": true,
   "compilerOptions": {
-    "lib": ["ESNext"],
     "baseUrl": "./src",
     "outDir": "dist",
     "module": "NodeNext",
@@ -15,7 +12,5 @@
     "strict": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true
-  },
-  "exclude": ["node_modules"]
+  }
 }
