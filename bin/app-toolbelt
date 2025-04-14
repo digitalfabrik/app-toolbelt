@@ -1,9 +1,3 @@
-#!/usr/bin/env node
+#!/usr/bin/env -S npx tsx
 
-require('ts-node').register({
-  transpileOnly: true,
-  skipIgnore: true,
-  compilerOptions: {}
-})
-
-require('../src/start.ts')
+import "../src/start.js"

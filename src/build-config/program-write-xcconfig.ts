@@ -12,9 +12,9 @@ export default (parent: Command) =>
     )
     .requiredOption('--directory <directory>', 'the directory to put the created xcconfig file in')
     .description('create and write a new buildConfig.tmp.xcconfig to the output directory')
-    .action((buildConfigName, platform, options: { [key: string]: any }) => {
+    .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
       try {
-        const buildConfig = loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
+        const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
         const xcconfig = asKeyValues(buildConfig, buildConfigName, platform)
         fs.writeFileSync(`${options.directory}/buildConfig.tmp.xcconfig`, xcconfig)
       } catch (e) {
