@@ -10,13 +10,18 @@ const WORKFLOW_TYPES = [
   'native_production_delivery',
   'native_promotion',
   'web_production_delivery',
-  'delivery'
+  'delivery',
+  'promotion',
+  'native_beta_delivery',
+  'web_promotion',
+  'web_beta_delivery'
 ]
 
 export default (parent: Command) =>
   parent
     .command('trigger <workflow-type>')
     .requiredOption('--api-token <api-token>', 'circleci api token')
+    .option('--branch <branch>', 'the branch the workflow will be triggered on', MAIN_BRANCH)
     .description(`trigger a workflow in the ci on the main branch`)
     .action(async (workflowType: string, options: { [key: string]: any }) => {
       try {
@@ -25,7 +30,7 @@ export default (parent: Command) =>
         }
 
         const postData = {
-          branch: MAIN_BRANCH,
+          branch: options.branch,
           parameters: {
             api_triggered: true,
             workflow_type: workflowType
