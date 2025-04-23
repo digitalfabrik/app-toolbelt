@@ -40,7 +40,7 @@ export default (parent: Command) =>
           appOctokit,
           options.owner,
           options.repo,
-          options.productionRelease,
+          options.productionDelivery,
           options.shouldUsePredefinedReleaseNotes,
           options.releaseNotes
         )

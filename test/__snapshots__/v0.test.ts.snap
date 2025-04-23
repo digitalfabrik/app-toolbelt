@@ -2,7 +2,7 @@
 
 exports[`stability test build-config 1`] = `"Usage: whitelabel v0 build-config [options] [command] Options: -h, --help display help for command Commands: to-bash [options] <build-config-name> <platform> outputs the specified build config as key-value pairs which can be executed by bash to-json [options] <build-config-name> <platform> outputs the specified build config as JSON to-properties [options] <build-config-name> <platform> create and write a new properties file to the stdout write-xcconfig [options] <build_config_name> <platform> create and write a new buildConfig.tmp.xcconfig to the output directory help [command] display help for command"`;
 
-exports[`stability test ci 1`] = `"Usage: whitelabel v0 ci [options] [command] Options: -h, --help display help for command Commands: trigger [options] <workflow-type> trigger a workflow in the ci on the main branch help [command] display help for command"`;
+exports[`stability test ci 1`] = `"error: unknown command 'ci'"`;
 
 exports[`stability test notify 1`] = `"Usage: whitelabel v0 notify [options] [command] Options: -h, --help display help for command Commands: mattermost [options] Send a message to a mattermost channel help [command] display help for command"`;
 
@@ -10,6 +10,6 @@ exports[`stability test release 1`] = `"Usage: whitelabel v0 release [options] [
 
 exports[`stability test release-notes 1`] = `"Usage: whitelabel v0 release-notes [options] [command] Options: -h, --help display help for command Commands: parse-release-notes [options] parse the release notes and outputs the release notes as JSON string and writes them to the specified file move-to [options] <new-version-name> move the release notes in 'unreleased' to a new subdirectory <new-version-name> prepare-metadata [options] <appName> <storeName> prepare metadata for store help [command] display help for command"`;
 
-exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes version Manage version build-config release ci notify help [command] display help for command"`;
+exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes version Manage version build-config release notify help [command] display help for command"`;
 
 exports[`stability test version 1`] = `"Usage: whitelabel v0 version [options] [command] Manage version Options: -h, --help display help for command Commands: calc calculate the next version help [command] display help for command"`;
