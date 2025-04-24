@@ -10,7 +10,7 @@ export default (parent: Command) =>
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-    .option('--production-release', 'whether this is a production release or not. If unset false')
+    .option('--production-release', 'whether this is a production release or not. If unset false', false)
     .option(
       '--should-use-predefined-release-notes',
       'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false'
@@ -40,7 +40,7 @@ export default (parent: Command) =>
           appOctokit,
           options.owner,
           options.repo,
-          options.productionDelivery,
+          options.productionRelease,
           options.shouldUsePredefinedReleaseNotes,
           options.releaseNotes
         )

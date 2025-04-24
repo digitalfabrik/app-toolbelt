@@ -49,9 +49,6 @@ export const loadBuildConfig = async (
     throw Error(`Build config not available for platform: ${platform}`)
   }
 
-  buildConfig.common.featureFlags.cityNotCooperating =
-    !!buildConfig.common.featureFlags.cityNotCooperatingTemplate && !!buildConfig.web.icons.cityNotCooperating
-
   return buildConfig[platform]
 }
 

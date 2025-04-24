@@ -2,8 +2,6 @@
 
 exports[`stability test build-config 1`] = `"Usage: whitelabel v0 build-config [options] [command] Options: -h, --help display help for command Commands: to-bash [options] <build-config-name> <platform> outputs the specified build config as key-value pairs which can be executed by bash to-json [options] <build-config-name> <platform> outputs the specified build config as JSON to-properties [options] <build-config-name> <platform> create and write a new properties file to the stdout write-xcconfig [options] <build_config_name> <platform> create and write a new buildConfig.tmp.xcconfig to the output directory help [command] display help for command"`;
 
-exports[`stability test ci 1`] = `"error: unknown command 'ci'"`;
-
 exports[`stability test notify 1`] = `"Usage: whitelabel v0 notify [options] [command] Options: -h, --help display help for command Commands: mattermost [options] Send a message to a mattermost channel help [command] display help for command"`;
 
 exports[`stability test release 1`] = `"Usage: whitelabel v0 release [options] [command] Options: -h, --help display help for command Commands: bump-to [options] <new-version-name> <new-version-code> commits the supplied version name and code to github and tags the commit create [options] <platform> <new-version-name> <new-version-code> creates a new release for the specified platform upload [options] Upload a release asset to github promote [options] Remove pre-release flag from the latest release sentry-create [options] <package-name> <version-name> <sourcemap-directory> create a new release on sentry. This file uses the configuration from ./.sentryclirc help [command] display help for command"`;

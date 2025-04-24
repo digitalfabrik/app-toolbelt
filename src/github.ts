@@ -136,7 +136,7 @@ export const createGithubRelease = async (
   appOctokit: Octokit,
   owner: string,
   repo: string,
-  productionDelivery: string,
+  productionRelease: boolean,
   shouldUsePredefinedReleaseNotes: boolean,
   predefinedReleaseNotes?: string
 ) => {
@@ -147,7 +147,7 @@ export const createGithubRelease = async (
     owner,
     repo,
     tag_name: tagName,
-    prerelease: productionDelivery === 'false',
+    prerelease: productionRelease === false,
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
     body:
