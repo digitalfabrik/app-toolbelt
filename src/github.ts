@@ -147,7 +147,7 @@ export const createGithubRelease = async (
     owner,
     repo,
     tag_name: tagName,
-    prerelease: productionRelease === false,
+    prerelease: !productionRelease,
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
     body:
