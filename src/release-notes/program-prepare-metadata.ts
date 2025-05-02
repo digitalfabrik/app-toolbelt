@@ -3,6 +3,7 @@ import { StoreName } from './constants.js'
 import { languageMap, loadStoreTranslations, metadataFromTranslations } from './translation.js'
 import fs from 'fs'
 import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
+import { parseNotesProgram } from './program-parse-release-notes.js'
 
 const metadataPath = (appName: string, storeName: StoreName, languageCode: string) =>
   `../native/${storeName === 'appstore' ? 'ios' : 'android'}/fastlane/${appName}/metadata/${languageCode}`
@@ -37,7 +38,7 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
       fs.mkdirSync(releaseNotesPath, { recursive: true })
 
       const destination = `${releaseNotesPath}/${storeName === 'appstore' ? 'release_notes.txt' : 'default.txt'}`
-      //parseNotesProgram({ ...platforms, production: true, language, destination, source, appName })
+      parseNotesProgram({ ...platforms, production: true, language, destination, source, appName })
 
       console.warn(`${storeName} metadata for ${appName} successfully written in language ${targetLanguage}.`)
     })

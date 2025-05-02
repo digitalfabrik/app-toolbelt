@@ -8,9 +8,9 @@ export default (parent: Command) =>
       '--deliverino-private-key <deliverino-private-key>',
       'private key of the deliverino github app in pem format with base64 encoding'
     )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "Integreat"')
+    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
-    .option('--production-release', 'whether this is a production release or not. If unset false')
+    .option('--production-release', 'whether this is a production release or not. If unset false', false)
     .option(
       '--should-use-predefined-release-notes',
       'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false'

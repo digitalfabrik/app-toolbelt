@@ -34,10 +34,6 @@ describe('stability test', () => {
     expect(getCommandOutput(['v0'])).toMatchSnapshot()
   })
 
-  test('ci', () => {
-    expect(getCommandOutput(['v0', 'ci'])).toMatchSnapshot()
-  })
-
   test('release', () => {
     expect(getCommandOutput(['v0', 'release'])).toMatchSnapshot()
   })

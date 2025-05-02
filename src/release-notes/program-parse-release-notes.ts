@@ -65,7 +65,7 @@ const parseReleaseNotes = ({
   return formatDevelopmentNotes({ notes: relevantNotes, language, platforms })
 }
 
-const parseNotesProgram = (options: ParseProgramOptionsType) => {
+export const parseNotesProgram = (options: ParseProgramOptionsType) => {
   try {
     const notes = parseReleaseNotes({ ...options })
 

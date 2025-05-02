@@ -12,7 +12,6 @@ import githubRelease from './release/program-github-release.js'
 import githubReleaseAssets from './release/program-github-release-assets.js'
 import githubPromoteRelease from './release/program-github-promote-release.js'
 import sentryRelease from './release/program-sentry-release.js'
-import triggerPipeline from './ci/program-trigger-pipeline.js'
 import notify from './notify/notify.js'
 import packageJson from '../package.json' with { type: 'json' }
 
@@ -45,9 +44,6 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   githubReleaseAssets(releaseCommand)
   githubPromoteRelease(releaseCommand)
   sentryRelease(releaseCommand)
-
-  const ciCommand = v0.command('ci')
-  triggerPipeline(ciCommand)
 
   const notifyCommand = v0.command('notify')
   notify(notifyCommand)

@@ -45,8 +45,9 @@ export const loadBuildConfig = async (
     throw Error(`Invalid BUILD_CONFIG_NAME supplied: ${buildConfigName}`)
   }
 
-  // FIXME this needs to be applied in integreat
-  // buildConfig.common.featureFlags.cityNotCooperating = !!buildConfig.common.featureFlags.cityNotCooperatingTemplate && !!buildConfig.web.icons.cityNotCooperating
+  if (!buildConfig[platform]) {
+    throw Error(`Build config not available for platform: ${platform}`)
+  }
 
   return buildConfig[platform]
 }
