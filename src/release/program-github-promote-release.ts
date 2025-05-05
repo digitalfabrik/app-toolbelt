@@ -10,7 +10,7 @@ type Options = {
   deliverinoPrivateKey: string
   owner: string
   repo: string
-  platform: 'web' | 'android' | 'ios'
+  platform: 'web' | 'android' | 'ios' | 'all'
 }
 
 const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Options) => {
@@ -26,7 +26,9 @@ const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Opti
 const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Options) => {
   const releases = await getReleases({ deliverinoPrivateKey, owner, repo, platform })
   const preReleases = releases.filter(release => release.prerelease)
-
+  // For integreat we always want platform android to be the latest release, so a link to the latest github release will go to the apk
+  // For entitlementcard we always want platform all to be the lastest release
+  const platformsFlaggedLatest = ['android', 'all']
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
   await Promise.all(
     preReleases.map(async preRelease => {
@@ -35,7 +37,7 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: platform === 'android' ? 'true' : 'false' // We always want android to be the latest release, so a link to the latest github release will go to the apk
+        make_latest: platformsFlaggedLatest.includes(platform) ? 'true' : 'false'
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     })
