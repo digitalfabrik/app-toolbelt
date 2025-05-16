@@ -1,11 +1,11 @@
 import { Command } from 'commander'
 import fs from 'fs'
-import path from 'path'
 
 import { VERSION_FILE } from '../constants.js'
+import { findPathInParents } from '../util.js'
 
 const calculateNewVersion = () => {
-  const versionFile = fs.readFileSync(VERSION_FILE, 'utf-8')
+  const versionFile = fs.readFileSync(findPathInParents(VERSION_FILE), 'utf-8')
   // versionCode is just used in the integreat-react-native-app
   const { versionName, versionCode } = JSON.parse(versionFile)
   const versionNameParts = versionName.split('.').map((it: string) => parseInt(it, 10))
@@ -24,7 +24,7 @@ const calculateNewVersion = () => {
 
   return {
     versionName: newVersionName,
-    versionCode: newVersionCode
+    versionCode: newVersionCode,
   }
 }
 

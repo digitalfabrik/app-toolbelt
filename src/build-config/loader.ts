@@ -1,30 +1,11 @@
 import decamelize from 'decamelize'
 import { flatten } from 'flat'
 import { Platform, PLATFORMS } from '../constants.js'
-import path from 'path'
+import { findPathInParents } from '../util.js'
 
 export type BuildConfigPlatformType = Platform | 'common'
 const PLATFORM_COMMON: BuildConfigPlatformType = 'common'
 const BUILD_CONFIG_PLATFORMS: BuildConfigPlatformType[] = [...PLATFORMS, PLATFORM_COMMON]
-
-const findBuildConfigDirectoryInParent = async (
-  buildConfigName: string,
-  buildConfigDirectory: string
-): Promise<any | null> => {
-  let currentDirectory = process.cwd()
-
-  for (let i = 0; i < 8; i++) {
-    let buildConfigPath = `${currentDirectory}/${buildConfigDirectory}/${buildConfigName}`
-    try {
-      const module = await import(buildConfigPath)
-      return module.default
-    } catch (e) {
-      currentDirectory = path.resolve(currentDirectory, '..')
-    }
-  }
-
-  return null
-}
 
 export const loadBuildConfig = async (
   buildConfigName: string | null | undefined,
@@ -39,7 +20,7 @@ export const loadBuildConfig = async (
     throw Error(`Invalid platform supplied: ${platform}`)
   }
 
-  const buildConfig = await findBuildConfigDirectoryInParent(buildConfigName, buildConfigDirectory)
+  const buildConfig = (await import(findPathInParents(buildConfigName, buildConfigDirectory))).default
 
   if (!buildConfig) {
     throw Error(`Invalid BUILD_CONFIG_NAME supplied: ${buildConfigName}`)
