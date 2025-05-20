@@ -51,8 +51,6 @@ const parseReleaseNotes = ({
   // Load all notes not belonging to a release
   const relevantNotes = fileNames
     .filter(fileName => fileName !== GITKEEP_FILE)
-    // @ts-expect-error
-    .map((fileName: string): NoteType => yaml.safeLoad(fs.readFileSync(`${source}/${fileName}`)))
     .map(fileName => asNoteType(yaml.load(fs.readFileSync(`${source}/${fileName}`, 'utf-8'))))
     .filter(note => isNoteRelevant({ note, platforms }))
 
