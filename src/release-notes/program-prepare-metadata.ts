@@ -22,7 +22,7 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
     targetLanguages.forEach(targetLanguage => {
       const path = metadataPath(appName, storeName, targetLanguage)
       fs.mkdirSync(path, {
-        recursive: true
+        recursive: true,
       })
 
       Object.keys(metadata).forEach(metadataKey => {
@@ -52,7 +52,7 @@ export default (parent: Command) =>
     .argument('storeName')
     .option(
       '--override-version-name <override-version-name>',
-      'if specified the release notes will be generated from the specified version name instead of the unreleased notes'
+      'if specified the release notes will be generated from the specified version name instead of the unreleased notes',
     )
     .description('prepare metadata for store')
     .action((appName: string, storeName: string, options: { [key: string]: any }) => {
