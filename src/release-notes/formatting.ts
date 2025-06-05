@@ -45,14 +45,15 @@ export const formatNotes = (params: {
       return production ? `* ${escapedNote}` : `* [ ${note.issue_key} ] ${escapedNote}`
     })
     .reduce((text, note) => {
+      if (text.length === 0) {
+        return note.substring(0, MAX_RELEASE_NOTES_LENGTH)
+      }
+      const combinedNote = `${text}\n${note}`
       // Make sure release notes don't get longer than the maximal allowed length
-      if (production && text.length + note.length > MAX_RELEASE_NOTES_LENGTH) {
+      if (production && combinedNote.length > MAX_RELEASE_NOTES_LENGTH) {
         return text
       }
-      if (text.length === 0) {
-        return note
-      }
-      return `${text}\n${note}`
+      return combinedNote
     }, defaultReleaseNote)
 
   return platformName && formattedNotes ? `\n${platformName}:\n${formattedNotes}` : formattedNotes
