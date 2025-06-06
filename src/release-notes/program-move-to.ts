@@ -13,7 +13,7 @@ type Options = {
 const moveReleaseNotes = async ({ newVersionName, deliverinoPrivateKey, owner, repo, branch }: Options) => {
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
   const {
-    data: { commit }
+    data: { commit },
   } = await appOctokit.repos.getBranch({ owner, repo, branch })
 
   // Tree of the root folder of the project
@@ -86,14 +86,14 @@ const moveReleaseNotes = async ({ newVersionName, deliverinoPrivateKey, owner, r
     repo,
     message: `Move release notes to ${newVersionName}\n[skip ci]`,
     tree: updatedRootTree.data.sha,
-    parents: [commit.sha]
+    parents: [commit.sha],
   })
 
   await appOctokit.git.updateRef({
     owner,
     repo,
     ref: `heads/${branch}`,
-    sha: renameCommit.data.sha
+    sha: renameCommit.data.sha,
   })
 }
 
@@ -102,7 +102,7 @@ export default (parent: Command) =>
     .command('move-to')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding'
+      'private key of the deliverino github app in pem format with base64 encoding',
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, usually "integreat-app"')
@@ -116,7 +116,7 @@ export default (parent: Command) =>
           deliverinoPrivateKey: options.deliverinoPrivateKey,
           branch: options.branch,
           owner: options.owner,
-          repo: options.repo
+          repo: options.repo,
         })
       } catch (e) {
         console.error(e)

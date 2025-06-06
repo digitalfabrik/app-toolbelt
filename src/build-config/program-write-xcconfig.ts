@@ -8,7 +8,7 @@ export default (parent: Command) =>
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',
-      './build-configs'
+      './build-configs',
     )
     .requiredOption('--directory <directory>', 'the directory to put the created xcconfig file in')
     .description('create and write a new buildConfig.tmp.xcconfig to the output directory')

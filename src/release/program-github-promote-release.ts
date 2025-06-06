@@ -18,7 +18,7 @@ const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Opti
 
   const releases: Releases = await appOctokit.rest.repos.listReleases({
     owner,
-    repo
+    repo,
   })
   return releases.data.filter(release => release.tag_name.includes(platform))
 }
@@ -37,10 +37,10 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: platformsFlaggedLatest.includes(platform) ? 'true' : 'false'
+        make_latest: platformsFlaggedLatest.includes(platform) ? 'true' : 'false',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
-    })
+    }),
   )
 
   if (preReleases[0]?.prerelease) {
@@ -56,7 +56,7 @@ export default (parent: Command) =>
     .description('Remove pre-release flag from the latest release')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding'
+      'private key of the deliverino github app in pem format with base64 encoding',
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
@@ -66,7 +66,7 @@ export default (parent: Command) =>
         const promotedRelease = await promoteReleases(options)
         if (promotedRelease) {
           console.log(
-            `The most recent beta version was promoted to production:\n[${promotedRelease.name}](${promotedRelease.html_url})`
+            `The most recent beta version was promoted to production:\n[${promotedRelease.name}](${promotedRelease.html_url})`,
           )
         }
       } catch (e) {

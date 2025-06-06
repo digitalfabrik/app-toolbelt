@@ -8,14 +8,14 @@ export default (parent: Command) =>
     .command('bump-to <new-version-name> <new-version-code>')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding'
+      'private key of the deliverino github app in pem format with base64 encoding',
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .requiredOption('--branch <branch>', 'the current branch')
     .option(
       '--platforms <platforms>',
-      'define the platforms separated by slash for the tags f.e. "native/web". If unset tags for all platforms will be created'
+      'define the platforms separated by slash for the tags f.e. "native/web". If unset tags for all platforms will be created',
     )
     .description('commits the supplied version name and code to github and tags the commit')
     .action(async (newVersionName, newVersionCode, options: { [key: string]: any }) => {
@@ -23,7 +23,7 @@ export default (parent: Command) =>
         const appOctokit = await authenticate({
           deliverinoPrivateKey: options.deliverinoPrivateKey,
           owner: options.owner,
-          repo: options.repo
+          repo: options.repo,
         })
 
         const versionCode = parseInt(newVersionCode, 10)
@@ -37,7 +37,7 @@ export default (parent: Command) =>
           options.owner,
           options.repo,
           options.branch,
-          appOctokit
+          appOctokit,
         )
 
         if (!commitSha) {

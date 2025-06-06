@@ -31,9 +31,9 @@ const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, file
           repo,
           release_id: releaseId,
           name: filename,
-          data: fileData as unknown as string
+          data: fileData as unknown as string,
         })
-      })
+      }),
   )
 }
 
@@ -43,7 +43,7 @@ export default (parent: Command) =>
     .description('Upload a release asset to github')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding'
+      'private key of the deliverino github app in pem format with base64 encoding',
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')

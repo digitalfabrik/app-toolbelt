@@ -66,7 +66,7 @@ export const formatDevelopmentNotes = (params: { notes: NoteType[]; language: st
     common: [] as NoteType[],
     android: [] as NoteType[],
     ios: [] as NoteType[],
-    web: [] as NoteType[]
+    web: [] as NoteType[],
   }
   // Group notes by platform
   const notesMap = notes.reduce((notesMap, note) => {
@@ -87,7 +87,7 @@ export const formatDevelopmentNotes = (params: { notes: NoteType[]; language: st
     notes: notesMap.android,
     language,
     production: false,
-    platformName: PLATFORM_ANDROID
+    platformName: PLATFORM_ANDROID,
   })
   const iosNotes = formatNotes({ notes: notesMap.ios, language, production: false, platformName: PLATFORM_IOS })
   const webNotes = formatNotes({ notes: notesMap.web, language, production: false, platformName: PLATFORM_WEB })

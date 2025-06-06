@@ -6,18 +6,18 @@ export default (parent: Command) =>
     .command('create <platform> <new-version-name> <new-version-code>')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding'
+      'private key of the deliverino github app in pem format with base64 encoding',
     )
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .option('--production-release', 'whether this is a production release or not. If unset false', false)
     .option(
       '--should-use-predefined-release-notes',
-      'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false'
+      'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false',
     )
     .option(
       '--release-notes <release-notes>',
-      'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated'
+      'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated',
     )
     .description('creates a new release for the specified platform')
     .action(async (platform, newVersionName, newVersionCode, options: { [key: string]: any }) => {
@@ -30,7 +30,7 @@ export default (parent: Command) =>
         const appOctokit = await authenticate({
           deliverinoPrivateKey: options.deliverinoPrivateKey,
           owner: options.owner,
-          repo: options.repo
+          repo: options.repo,
         })
 
         await createGithubRelease(
@@ -42,7 +42,7 @@ export default (parent: Command) =>
           options.repo,
           options.productionRelease,
           options.shouldUsePredefinedReleaseNotes,
-          options.releaseNotes
+          options.releaseNotes,
         )
       } catch (e) {
         console.error(e)

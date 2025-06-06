@@ -29,7 +29,7 @@ const appstoreLanguageMap: Record<string, string[]> = {
   tr: ['tr'],
   uk: ['uk'],
   ur: [],
-  'zh-CN': ['zh-Hans']
+  'zh-CN': ['zh-Hans'],
 }
 
 // Maps our translation keys to the right key used by the play store
@@ -57,7 +57,7 @@ const playstoreLanguageMap: Record<string, string[]> = {
   tr: ['tr-TR'],
   uk: ['uk'],
   ur: ['ur'],
-  'zh-CN': ['zh-CN']
+  'zh-CN': ['zh-CN'],
 }
 
 export const languageMap = (storeName: StoreName): Record<string, string[]> =>
@@ -70,7 +70,7 @@ type StoreTranslationType = Record<string, Record<string, Record<string, string>
 export const metadataFromTranslations = (
   storeName: StoreName,
   language: string,
-  translations: StoreTranslationType
+  translations: StoreTranslationType,
 ): Record<string, string> => {
   const commonTranslation = translations.common![language]!
   const name = commonTranslation.name!
@@ -81,12 +81,12 @@ export const metadataFromTranslations = (
     ? {
         name,
         description,
-        ...storeTranslation
+        ...storeTranslation,
       }
     : {
         title: name,
         full_description: description,
-        ...storeTranslation
+        ...storeTranslation,
       }
 }
 

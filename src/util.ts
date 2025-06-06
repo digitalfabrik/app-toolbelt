@@ -13,14 +13,14 @@ export const getPlatformsFromString = (platformsString?: string): Platform[] | u
   if (!platforms.every((platform: Platform) => PLATFORMS.includes(platform))) {
     throw new Error(
       `Provided platforms are incorrect! Please check available platforms (${PLATFORMS.join(
-        ','
-      )}) and correct delimiter (${delimiter})`
+        ',',
+      )}) and correct delimiter (${delimiter})`,
     )
   }
   return platforms
 }
 
-export const findPathInParents= (name: string, directory: string = '.'): string => {
+export const findPathInParents = (name: string, directory: string = '.'): string => {
   let currentDirectory = process.cwd()
 
   for (let i = 0; i < 8; i++) {

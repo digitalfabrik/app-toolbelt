@@ -32,18 +32,18 @@ export default (parent: Command) => {
       const data = {
         channel: options.channel,
         username: 'circleci',
-        text: options.message
+        text: options.message,
       }
 
       const response = await fetch(process.env.MM_WEBHOOK, {
         method: 'post',
         body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       })
 
       if (response.status != 200) {
         console.error(
-          `Notification not sent due to an error. Status: ${response.status}. ${response.statusText} Please check the webhook URL`
+          `Notification not sent due to an error. Status: ${response.status}. ${response.statusText} Please check the webhook URL`,
         )
         process.exit(1)
       }

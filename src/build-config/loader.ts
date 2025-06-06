@@ -10,7 +10,7 @@ const BUILD_CONFIG_PLATFORMS: BuildConfigPlatformType[] = [...PLATFORMS, PLATFOR
 export const loadBuildConfig = async (
   buildConfigName: string | null | undefined,
   platform: BuildConfigPlatformType,
-  buildConfigDirectory: string
+  buildConfigDirectory: string,
 ): Promise<Record<string, unknown>> => {
   if (!buildConfigName) {
     throw Error('No BUILD_CONFIG_NAME supplied!')
@@ -38,12 +38,12 @@ export const asKeyValues = (
   buildConfigName: string,
   platform: BuildConfigPlatformType,
   spaces = true,
-  quotes = false
+  quotes = false,
 ) => {
   const xcconfigOptions = flatten<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
     delimiter: '_',
     // Dashes are not supported in keys in xcconfigs and android resources
-    transformKey: key => decamelize(key).toUpperCase().replace('-', '_')
+    transformKey: key => decamelize(key).toUpperCase().replace('-', '_'),
   })
   const assignOperator = `${spaces ? ' ' : ''}=${spaces ? ' ' : ''}`
 

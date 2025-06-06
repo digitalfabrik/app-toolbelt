@@ -5,7 +5,7 @@ import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
 export const authenticate = async ({
   deliverinoPrivateKey,
   owner,
-  repo
+  repo,
 }: {
   deliverinoPrivateKey: string
   owner: string
@@ -16,10 +16,10 @@ export const authenticate = async ({
 
   const octokit = new Octokit({ authStrategy: createAppAuth, auth: { appId, privateKey } })
   const {
-    data: { id: installationId }
+    data: { id: installationId },
   } = await octokit.apps.getRepoInstallation({ owner, repo })
   const {
-    data: { token }
+    data: { token },
   } = await octokit.apps.createInstallationAccessToken({ installation_id: installationId })
 
   return new Octokit({ auth: token })
@@ -38,7 +38,7 @@ const createTag = async (
   owner: string,
   repo: string,
   commitSha: string,
-  appOctokit: Octokit
+  appOctokit: Octokit,
 ) => {
   const tag = await appOctokit.git.createTag({
     owner,
@@ -46,7 +46,7 @@ const createTag = async (
     tag: tagName,
     message: tagMessage,
     object: commitSha,
-    type: 'commit'
+    type: 'commit',
   })
   const tagSha = tag.data.sha
   console.warn(`New tag with name ${tagName} successfully created.`)
@@ -55,7 +55,7 @@ const createTag = async (
     owner,
     repo,
     ref: `refs/tags/${tagName}`,
-    sha: tagSha
+    sha: tagSha,
   })
   console.warn(`New ref with name ${tagName} successfully created.`)
 }
@@ -66,7 +66,7 @@ export const commitVersion = async (
   owner: string,
   repo: string,
   branch: string,
-  appOctokit: Octokit
+  appOctokit: Octokit,
 ): Promise<string | undefined> => {
   const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
 
@@ -82,7 +82,7 @@ export const commitVersion = async (
     branch,
     message: commitMessage,
     // @ts-expect-error Random typescript error: property sha is not available on type { ..., sha: string, ... }
-    sha: versionFileContent.data.sha
+    sha: versionFileContent.data.sha,
   })
   console.warn(`New version successfully commited with message "${commitMessage}".`)
 
@@ -96,7 +96,7 @@ export const createTags = async (
   owner: string,
   repo: string,
   appOctokit: Octokit,
-  predefinedPlatforms?: Platform[]
+  predefinedPlatforms?: Platform[],
 ) => {
   const platforms = predefinedPlatforms ? predefinedPlatforms : PLATFORMS
   await Promise.all(
@@ -104,7 +104,7 @@ export const createTags = async (
       const tagName = versionTagName({ versionName, platform })
       const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
       return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
-    })
+    }),
   )
 }
 
@@ -115,13 +115,13 @@ const generateReleaseNotesFromGithubEndpoint = async (
   owner: string,
   repo: string,
   appOctokit: Octokit,
-  tagName: string
+  tagName: string,
 ): Promise<string> => {
   try {
     const response = await appOctokit.request(getGithubApiUrlForReleaseNotes(owner, repo), {
       owner,
       repo,
-      tag_name: tagName
+      tag_name: tagName,
     })
     return response.data.body
   } catch (e) {
@@ -138,7 +138,7 @@ export const createGithubRelease = async (
   repo: string,
   productionRelease: boolean,
   shouldUsePredefinedReleaseNotes: boolean,
-  predefinedReleaseNotes?: string
+  predefinedReleaseNotes?: string,
 ) => {
   const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
@@ -153,7 +153,7 @@ export const createGithubRelease = async (
     body:
       shouldUsePredefinedReleaseNotes && predefinedReleaseNotes
         ? predefinedReleaseNotes
-        : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName)
+        : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName),
   })
   console.log(release.data.id)
 }

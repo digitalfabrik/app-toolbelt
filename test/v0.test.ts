@@ -14,7 +14,7 @@ const getCommandOutput = (args: readonly string[]) => {
     },
     outputError: (str: string, write: (str: string) => void) => {
       output += str
-    }
+    },
   })
 
   let argv = ['node', 'whitelabel', ...args]
