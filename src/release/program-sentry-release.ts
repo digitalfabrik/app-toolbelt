@@ -29,9 +29,9 @@ export default (parent: Command) =>
             version,
             'upload-sourcemaps',
             sourcemapDirectory,
-            ...(versionCode ? ['--dist', versionCode] : [])
+            ...(versionCode ? ['--dist', versionCode] : []),
           ],
-          true
+          true,
         )
       } catch (e) {
         console.error(e)

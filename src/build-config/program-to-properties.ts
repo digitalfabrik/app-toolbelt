@@ -8,7 +8,7 @@ export default (parent: Command) =>
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',
-      './build-configs'
+      './build-configs',
     )
     .description('create and write a new properties file to the stdout')
     .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
