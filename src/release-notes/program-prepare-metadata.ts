@@ -5,10 +5,10 @@ import fs from 'fs'
 import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 import { parseNotesProgram } from './program-parse-release-notes.js'
 
-const metadataPath = (appName: string, storeName: StoreName, languageCode: string) =>
-  `../native/${storeName === 'appstore' ? 'ios' : 'android'}/fastlane/${appName}/metadata/${languageCode}`
+const metadataPath = (metadataDirectory: string, languageCode: string) =>
+  `${metadataDirectory}/${languageCode}`
 
-const writeMetadata = (appName: string, storeName: string, overrideVersionName?: string) => {
+const writeMetadata = (appName: string, storeName: string, metadataDirectory: string, overrideVersionName?: string) => {
   if (storeName !== 'appstore' && storeName !== 'playstore') {
     throw new Error(`Invalid store name ${storeName} passed!`)
   }
@@ -20,7 +20,7 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
     const targetLanguages = languageMap(storeName)[language] ?? [language]
 
     targetLanguages.forEach(targetLanguage => {
-      const path = metadataPath(appName, storeName, targetLanguage)
+      const path = metadataPath(metadataDirectory, targetLanguage)
       fs.mkdirSync(path, {
         recursive: true,
       })
@@ -32,9 +32,7 @@ const writeMetadata = (appName: string, storeName: string, overrideVersionName?:
       // Prepare release notes
       const platforms = { ios: storeName === 'appstore', android: storeName === 'playstore', web: false }
       const source = `../${RELEASE_NOTES_DIR}/${overrideVersionName ?? UNRELEASED_DIR}`
-      const releaseNotesPath = `${metadataPath(appName, storeName, targetLanguage)}${
-        storeName === 'playstore' ? '/changelogs' : ''
-      }`
+      const releaseNotesPath = `${path}/${storeName === 'playstore' ? '/changelogs' : ''}`
       fs.mkdirSync(releaseNotesPath, { recursive: true })
 
       const destination = `${releaseNotesPath}/${storeName === 'appstore' ? 'release_notes.txt' : 'default.txt'}`
@@ -50,14 +48,15 @@ export default (parent: Command) =>
     .command('prepare-metadata')
     .argument('appName')
     .argument('storeName')
+    .argument('metadataDirectory')
     .option(
       '--override-version-name <override-version-name>',
       'if specified the release notes will be generated from the specified version name instead of the unreleased notes',
     )
     .description('prepare metadata for store')
-    .action((appName: string, storeName: string, options: { [key: string]: any }) => {
+    .action((appName: string, storeName: string, metadataDirectory: string, options: { [key: string]: any }) => {
       try {
-        writeMetadata(appName, storeName, options.overrideVersionName)
+        writeMetadata(appName, storeName, metadataDirectory, options.overrideVersionName)
       } catch (e) {
         console.error(e)
         process.exit(1)
