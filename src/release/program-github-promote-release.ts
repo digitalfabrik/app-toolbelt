@@ -28,6 +28,7 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
   const preReleases = releases.filter(release => release.prerelease)
   // For integreat we always want platform android to be the latest release, so a link to the latest github release will go to the apk
   // For entitlementcard we always want platform all to be the lastest release
+  // For lunes we want platform native to be the latest release
   const platformsFlaggedLatest = ['android', 'native', 'all']
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
   await Promise.all(
