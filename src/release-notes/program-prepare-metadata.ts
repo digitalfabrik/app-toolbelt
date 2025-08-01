@@ -5,8 +5,7 @@ import fs from 'fs'
 import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 import { parseNotesProgram } from './program-parse-release-notes.js'
 
-const metadataPath = (metadataDirectory: string, languageCode: string) =>
-  `${metadataDirectory}/${languageCode}`
+const metadataPath = (metadataDirectory: string, languageCode: string) => `${metadataDirectory}/${languageCode}`
 
 const writeMetadata = (appName: string, storeName: string, metadataDirectory: string, overrideVersionName?: string) => {
   if (storeName !== 'appstore' && storeName !== 'playstore') {
