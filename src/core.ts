@@ -5,6 +5,7 @@ import prepareMetadata from './release-notes/program-prepare-metadata.js'
 import toBash from './build-config/program-to-bash.js'
 import toJson from './build-config/program-to-json.js'
 import toProperties from './build-config/program-to-properties.js'
+import writePlist from './build-config/program-write-plist.js'
 import writeXcConfig from './build-config/program-write-xcconfig.js'
 import calcNextVersion from './version/program-calc-next-version.js'
 import gitRelease from './release/program-git-release.js'
@@ -37,6 +38,7 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   toJson(buildConfigCommand)
   toProperties(buildConfigCommand)
   writeXcConfig(buildConfigCommand)
+  writePlist(buildConfigCommand)
 
   const releaseCommand = v0.command('release')
   gitRelease(releaseCommand)

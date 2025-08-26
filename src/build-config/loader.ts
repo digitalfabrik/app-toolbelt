@@ -7,6 +7,8 @@ export type BuildConfigPlatformType = Platform | 'common'
 const PLATFORM_COMMON: BuildConfigPlatformType = 'common'
 const BUILD_CONFIG_PLATFORMS: BuildConfigPlatformType[] = [...PLATFORMS, PLATFORM_COMMON]
 
+export const toSnakeCase = (value: string): string => decamelize(value).toUpperCase().replace('-', '_')
+
 export const loadBuildConfig = async (
   buildConfigName: string | null | undefined,
   platform: BuildConfigPlatformType,
@@ -43,7 +45,7 @@ export const asKeyValues = (
   const xcconfigOptions = flatten<Record<string, unknown>, Record<string, string | number | boolean>>(buildConfig, {
     delimiter: '_',
     // Dashes are not supported in keys in xcconfigs and android resources
-    transformKey: key => decamelize(key).toUpperCase().replace('-', '_'),
+    transformKey: toSnakeCase,
   })
   const assignOperator = `${spaces ? ' ' : ''}=${spaces ? ' ' : ''}`
 
