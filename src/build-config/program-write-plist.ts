@@ -24,7 +24,8 @@ export default (parent: Command) =>
         const snakeCaseEntries = Object.fromEntries(
           Object.entries(entries).map(([key, value]) => [toSnakeCase(key), value]),
         )
-        fs.writeFileSync(`${options.directory}/${outputName}`, plist.default.build(snakeCaseEntries))
+        // @ts-ignore the types are not correctly defined here
+        fs.writeFileSync(`${options.directory}/${outputName}`, plist.build(snakeCaseEntries))
       } catch (e) {
         console.error(e)
         process.exit(1)
