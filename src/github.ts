@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
+import { Platform, PLATFORM_ALL, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 
@@ -155,7 +155,8 @@ export const createGithubRelease = async (
   options: GithubReleaseOptions,
 ) => {
   const { owner, repo, productionRelease, releaseNotes } = options
-  const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
+  const baseReleaseName = `${newVersionName} - ${newVersionCode}`
+  const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
   const release = await appOctokit.repos.createRelease({
