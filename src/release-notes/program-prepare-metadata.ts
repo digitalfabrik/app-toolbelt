@@ -1,9 +1,12 @@
 import { Command } from 'commander'
-import { StoreName } from './constants.js'
 import { languageMap, loadStoreTranslations, metadataFromTranslations } from './translation.js'
 import fs from 'fs'
 import { RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 import { parseNotesProgram } from './program-parse-release-notes.js'
+
+type PrepareMetadataOptions = {
+  overrideVersionName: string
+}
 
 const metadataPath = (metadataDirectory: string, languageCode: string) => `${metadataDirectory}/${languageCode}`
 
@@ -44,16 +47,13 @@ const writeMetadata = (appName: string, storeName: string, metadataDirectory: st
 
 export default (parent: Command) =>
   parent
-    .command('prepare-metadata')
-    .argument('appName')
-    .argument('storeName')
-    .argument('metadataDirectory')
+    .description('prepare metadata for store')
+    .command('prepare-metadata <app-name> <store-name> <metadata-directory>')
     .option(
       '--override-version-name <override-version-name>',
       'if specified the release notes will be generated from the specified version name instead of the unreleased notes',
     )
-    .description('prepare metadata for store')
-    .action((appName: string, storeName: string, metadataDirectory: string, options: { [key: string]: any }) => {
+    .action((appName: string, storeName: string, metadataDirectory: string, options: PrepareMetadataOptions) => {
       try {
         writeMetadata(appName, storeName, metadataDirectory, options.overrideVersionName)
       } catch (e) {

@@ -1,10 +1,15 @@
 import { Command } from 'commander'
-import { authenticate, commitVersion, createTags } from '../github.js'
-import { Platform, PLATFORMS } from '../constants.js'
+import { authenticate, commitVersion, createTags, GithubAuthenticationParams } from '../github.js'
 import { getPlatformsFromString } from '../util.js'
+
+type GithubBumpVersionOptions = GithubAuthenticationParams & {
+  platforms?: string
+  branch: string
+}
 
 export default (parent: Command) =>
   parent
+    .description('commits the supplied version name and code to github and tags the commit')
     .command('bump-to <new-version-name> <new-version-code>')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
@@ -17,14 +22,9 @@ export default (parent: Command) =>
       '--platforms <platforms>',
       'define the platforms separated by slash for the tags f.e. "native/web". If unset tags for all platforms will be created',
     )
-    .description('commits the supplied version name and code to github and tags the commit')
-    .action(async (newVersionName, newVersionCode, options: { [key: string]: any }) => {
+    .action(async (newVersionName, newVersionCode, options: GithubBumpVersionOptions) => {
       try {
-        const appOctokit = await authenticate({
-          deliverinoPrivateKey: options.deliverinoPrivateKey,
-          owner: options.owner,
-          repo: options.repo,
-        })
+        const appOctokit = await authenticate(options)
 
         const versionCode = parseInt(newVersionCode, 10)
         if (Number.isNaN(versionCode)) {

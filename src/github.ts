@@ -2,15 +2,17 @@ import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
 import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
 
+export type GithubAuthenticationParams = {
+  deliverinoPrivateKey: string
+  owner: string
+  repo: string
+}
+
 export const authenticate = async ({
   deliverinoPrivateKey,
   owner,
   repo,
-}: {
-  deliverinoPrivateKey: string
-  owner: string
-  repo: string
-}): Promise<Octokit> => {
+}: GithubAuthenticationParams): Promise<Octokit> => {
   const appId = 59249 // https://github.com/apps/deliverino
   const privateKey = Buffer.from(deliverinoPrivateKey, 'base64').toString('ascii')
 

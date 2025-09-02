@@ -82,10 +82,14 @@ export const parseNotesProgram = (options: ParseProgramOptionsType) => {
 
 export default (parent: Command) =>
   parent
+    .description('parse, output the release notes as JSON string and write them to the specified file')
     .command('parse-release-notes')
-    .description(
-      'parse the release notes and outputs the release notes as JSON string and writes them to the specified file',
+    .requiredOption(
+      '--source <source>',
+      'the directory of the release notes to parse',
+      `../${RELEASE_NOTES_DIR}/${UNRELEASED_DIR}`,
     )
+    .requiredOption('--language <language>', 'the language of the release notes to parse', DEFAULT_NOTES_LANGUAGE)
     .option('--ios', 'include release notes for ios')
     .option('--android', 'include release notes for android')
     .option('--web', 'include release notes for web.')
@@ -98,13 +102,6 @@ export default (parent: Command) =>
       'the name of the app to prepare the notes for. Only used if production flag is set.',
     )
     .option('--destination <destination>', 'if specified the parsed notes are saved to the directory')
-    .requiredOption(
-      '--source <source>',
-      'the directory of the release notes to parse',
-      `../${RELEASE_NOTES_DIR}/${UNRELEASED_DIR}`,
-    )
-    .requiredOption('--language <language>', 'the language of the release notes to parse', DEFAULT_NOTES_LANGUAGE)
-    .action((options: { [key: string]: any }) => {
-      // @ts-ignore
-      parseNotesProgram({ ...options })
+    .action((options: ParseProgramOptionsType) => {
+      parseNotesProgram(options)
     })

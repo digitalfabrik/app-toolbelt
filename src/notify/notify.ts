@@ -1,16 +1,21 @@
-import { exec } from 'child_process'
 import { Command } from 'commander'
 import * as process from 'process'
 import fetch from 'node-fetch'
 
+type MattermostNotifyOptions = {
+  message?: string
+  channel?: string
+  allowAllBranches?: boolean
+}
+
 export default (parent: Command) => {
   parent
+    .description('Send a message to a mattermost channel')
     .command('mattermost')
     .option('--message <message>', 'The message that should be sent')
     .option('--channel <channel>', '')
     .option('--allow-all-branches', '')
-    .description('Send a message to a mattermost channel')
-    .action(async (options: { [key: string]: any }) => {
+    .action(async (options: MattermostNotifyOptions) => {
       const isAlwaysAllowedBranch =
         process.env.CIRCLE_BRANCH == 'main' || process.env.CIRCLE_BRANCH?.startsWith('release')
       if (!(isAlwaysAllowedBranch || options.allowAllBranches)) {

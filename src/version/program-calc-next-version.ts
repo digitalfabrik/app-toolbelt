@@ -30,8 +30,8 @@ const calculateNewVersion = () => {
 
 export default (parent: Command) =>
   parent
-    .command('calc')
     .description('calculate the next version')
+    .command('calc')
     .action(() => {
       try {
         const newVersion = calculateNewVersion()

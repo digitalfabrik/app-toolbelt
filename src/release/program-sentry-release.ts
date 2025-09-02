@@ -1,16 +1,18 @@
 import { Command } from 'commander'
 import SentryCli from '@sentry/cli'
 
+type SentryReleaseOptions = {
+  authToken: string
+  versionCode?: number
+}
+
 export default (parent: Command) =>
   parent
-    .command('sentry-create')
-    .argument('package-name', 'package name under which to release')
-    .argument('version-name', 'name of the version to release')
-    .argument('sourcemap-directory', 'relative path to the directory where the sourcemap is')
-    .option('--versionCode <version-code>', 'code of the version to release, this is only needed for react-native')
-    .requiredOption('--auth-token <auth-token>', 'the auth token')
     .description('create a new release on sentry. This file uses the configuration from ./.sentryclirc')
-    .action(async (packageName, versionName, sourcemapDirectory, options: { [key: string]: any }) => {
+    .command('sentry-create <package-name> <version-name> <sourcemap-directory>')
+    .requiredOption('--auth-token <auth-token>', 'the auth token')
+    .option('--versionCode <version-code>', 'code of the version to release, this is only needed for react-native')
+    .action(async (packageName, versionName, sourcemapDirectory, options: SentryReleaseOptions) => {
       try {
         const versionCode = options.versionCode
         let version = `${packageName}@${versionName}`

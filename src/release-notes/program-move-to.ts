@@ -1,16 +1,15 @@
 import { Command, createCommand } from 'commander'
-import { authenticate } from '../github.js'
+import { authenticate, GithubAuthenticationParams } from '../github.js'
 import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 
-type Options = {
-  newVersionName: string
-  deliverinoPrivateKey: string
-  owner: string
-  repo: string
+type GithubMoveReleaseNotesOptions = GithubAuthenticationParams & {
   branch: string
 }
 
-const moveReleaseNotes = async ({ newVersionName, deliverinoPrivateKey, owner, repo, branch }: Options) => {
+const moveReleaseNotes = async (
+  newVersionName: string,
+  { deliverinoPrivateKey, owner, repo, branch }: GithubMoveReleaseNotesOptions,
+) => {
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
   const {
     data: { commit },
@@ -99,7 +98,8 @@ const moveReleaseNotes = async ({ newVersionName, deliverinoPrivateKey, owner, r
 
 export default (parent: Command) =>
   parent
-    .command('move-to')
+    .description("move the release notes in 'unreleased' to a new subdirectory <new-version-name>")
+    .command('move-to <new-version-name>')
     .requiredOption(
       '--deliverino-private-key <deliverino-private-key>',
       'private key of the deliverino github app in pem format with base64 encoding',
@@ -107,12 +107,9 @@ export default (parent: Command) =>
     .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
     .requiredOption('--repo <repo>', 'the current repository, usually "integreat-app"')
     .requiredOption('--branch <branch>', 'the current branch')
-    .argument('new-version-name')
-    .description("move the release notes in 'unreleased' to a new subdirectory <new-version-name>")
-    .action(async (newVersionName: string, options: { [key: string]: any }) => {
+    .action(async (newVersionName: string, options: GithubMoveReleaseNotesOptions) => {
       try {
-        await moveReleaseNotes({
-          newVersionName,
+        await moveReleaseNotes(newVersionName, {
           deliverinoPrivateKey: options.deliverinoPrivateKey,
           branch: options.branch,
           owner: options.owner,
