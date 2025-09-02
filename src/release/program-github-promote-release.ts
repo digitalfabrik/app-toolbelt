@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
-import { Platform } from '../constants.js'
+import { Platform, PLATFORMS_FLAGGED_LATEST } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform: Platform
@@ -19,9 +19,6 @@ const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Gith
 const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
   const releases = await getReleases({ deliverinoPrivateKey, owner, repo, platform })
   const preReleases = releases.filter(release => release.prerelease)
-  // For integreat we always want platform android to be the latest release, so a link to the latest github release will go to the apk
-  // For entitlementcard and lunes we always want platform all to be the lastest release
-  const platformsFlaggedLatest = ['android', 'native', 'all']
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
   await Promise.all(
     preReleases.map(async preRelease => {
@@ -30,7 +27,7 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: platformsFlaggedLatest.includes(platform) ? 'true' : 'false',
+        make_latest: PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     }),

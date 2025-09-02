@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
+import { Platform, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 
@@ -158,7 +158,7 @@ export const createGithubRelease = async (
     repo,
     tag_name: tagName,
     prerelease: !productionRelease,
-    make_latest: platform === 'android' ? 'true' : 'false',
+    make_latest: productionRelease && PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
     name: releaseName,
     body:
       shouldUsePredefinedReleaseNotes && releaseNotes
