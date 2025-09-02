@@ -1,0 +1,11 @@
+changelog:
+  categories:
+    - title: Breaking 🛠
+      labels:
+        - breaking
+    - title: Fixes and new features
+      labels:
+        - '*'
+      exclude:
+        labels:
+          - breaking
