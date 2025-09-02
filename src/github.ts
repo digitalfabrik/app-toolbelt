@@ -155,7 +155,7 @@ export const createGithubRelease = async (
   options: GithubReleaseOptions,
 ) => {
   const { owner, repo, productionRelease, releaseNotes } = options
-  const baseReleaseName = `${newVersionName} - ${newVersionCode}`
+  const baseReleaseName = `${newVersionName} (${newVersionCode})`
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
