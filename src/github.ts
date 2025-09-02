@@ -16,7 +16,7 @@ export type GithubAuthenticationParams = {
 
 export const withGithubAuthentication = (command: Command) =>
   command
-    .requiredOption('--private-key <private-key>', 'Private key of the github app as base64 pem format')
+    .requiredOption('--private-key <private-key>', 'Github app private key as base64 pem format')
     .requiredOption('--owner <owner>', 'Github owner (e.g. "digitalfabrik")')
     .requiredOption('--repo <repo>', 'Github repository')
     .option('--github-app <github-app>', 'Github app id', DELIVERINO_APP_ID)
