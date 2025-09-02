@@ -1,5 +1,5 @@
-import { Command, createCommand } from 'commander'
-import { authenticate, GithubAuthenticationParams } from '../github.js'
+import { Command } from 'commander'
+import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
 import { GITKEEP_FILE, RELEASE_NOTES_DIR, UNRELEASED_DIR } from './constants.js'
 
 type GithubMoveReleaseNotesOptions = GithubAuthenticationParams & {
@@ -96,16 +96,10 @@ const moveReleaseNotes = async (
   })
 }
 
-export default (parent: Command) =>
-  parent
+export default (parent: Command) => {
+  const command = parent
     .description("move the release notes in 'unreleased' to a new subdirectory <new-version-name>")
     .command('move-to <new-version-name>')
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding',
-    )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-    .requiredOption('--repo <repo>', 'the current repository, usually "integreat-app"')
     .requiredOption('--branch <branch>', 'the current branch')
     .action(async (newVersionName: string, options: GithubMoveReleaseNotesOptions) => {
       try {
@@ -120,3 +114,5 @@ export default (parent: Command) =>
         process.exit(1)
       }
     })
+  return withGithubAuthentication(command)
+}

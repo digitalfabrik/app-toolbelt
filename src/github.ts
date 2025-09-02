@@ -2,12 +2,22 @@ import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
 import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
+import { Command } from 'commander'
 
 export type GithubAuthenticationParams = {
   deliverinoPrivateKey: string
   owner: string
   repo: string
 }
+
+export const withGithubAuthentication = (command: Command) =>
+  command
+    .requiredOption(
+      '--deliverino-private-key <deliverino-private-key>',
+      'Private key of the github app as base64 pem format',
+    )
+    .requiredOption('--owner <owner>', 'Github owner (e.g. "digitalfabrik")')
+    .requiredOption('--repo <repo>', 'Github repository')
 
 export const authenticate = async ({
   deliverinoPrivateKey,

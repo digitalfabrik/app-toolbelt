@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { authenticate, createGithubRelease, GithubAuthenticationParams } from '../github.js'
+import { authenticate, createGithubRelease, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
 
 export type GithubReleaseOptions = GithubAuthenticationParams & {
   productionRelease: boolean
@@ -7,16 +7,10 @@ export type GithubReleaseOptions = GithubAuthenticationParams & {
   releaseNotes?: string
 }
 
-export default (parent: Command) =>
-  parent
+export default (parent: Command) => {
+  const command = parent
     .description('creates a new release for the specified platform')
     .command('create <platform> <new-version-name> <new-version-code>')
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding',
-    )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-    .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .option('--production-release', 'whether this is a production release or not. If unset false', false)
     .option(
       '--should-use-predefined-release-notes',
@@ -42,3 +36,5 @@ export default (parent: Command) =>
         process.exit(1)
       }
     })
+  return withGithubAuthentication(command)
+}

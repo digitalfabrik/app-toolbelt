@@ -1,5 +1,11 @@
 import { Command } from 'commander'
-import { authenticate, commitVersion, createTags, GithubAuthenticationParams } from '../github.js'
+import {
+  authenticate,
+  commitVersion,
+  createTags,
+  GithubAuthenticationParams,
+  withGithubAuthentication,
+} from '../github.js'
 import { getPlatformsFromString } from '../util.js'
 
 type GithubBumpVersionOptions = GithubAuthenticationParams & {
@@ -7,16 +13,10 @@ type GithubBumpVersionOptions = GithubAuthenticationParams & {
   branch: string
 }
 
-export default (parent: Command) =>
-  parent
+export default (parent: Command) => {
+  const command = parent
     .description('commits the supplied version name and code to github and tags the commit')
     .command('bump-to <new-version-name> <new-version-code>')
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding',
-    )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-    .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .requiredOption('--branch <branch>', 'the current branch')
     .option(
       '--platforms <platforms>',
@@ -52,3 +52,5 @@ export default (parent: Command) =>
         process.exit(1)
       }
     })
+  return withGithubAuthentication(command)
+}

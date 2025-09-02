@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import { authenticate, GithubAuthenticationParams } from '../github.js'
+import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
 import { Platform } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
@@ -43,16 +43,10 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
   return null
 }
 
-export default (parent: Command) =>
-  parent
+export default (parent: Command) => {
+  const command = parent
     .description('Remove pre-release flag from the latest release')
     .command('promote')
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding',
-    )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-    .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
     .requiredOption('--platform <platform>')
     .action(async (options: GithubPromoteReleaseOptions) => {
       try {
@@ -67,3 +61,5 @@ export default (parent: Command) =>
         process.exit(1)
       }
     })
+  return withGithubAuthentication(command)
+}
