@@ -8,9 +8,9 @@ type GithubMoveReleaseNotesOptions = GithubAuthenticationParams & {
 
 const moveReleaseNotes = async (
   newVersionName: string,
-  { deliverinoPrivateKey, owner, repo, branch }: GithubMoveReleaseNotesOptions,
+  { privateKey, owner, repo, branch }: GithubMoveReleaseNotesOptions,
 ) => {
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
+  const appOctokit = await authenticate({ privateKey, owner, repo })
   const {
     data: { commit },
   } = await appOctokit.repos.getBranch({ owner, repo, branch })
@@ -104,7 +104,7 @@ export default (parent: Command) => {
     .action(async (newVersionName: string, options: GithubMoveReleaseNotesOptions) => {
       try {
         await moveReleaseNotes(newVersionName, {
-          deliverinoPrivateKey: options.deliverinoPrivateKey,
+          privateKey: options.privateKey,
           branch: options.branch,
           owner: options.owner,
           repo: options.repo,

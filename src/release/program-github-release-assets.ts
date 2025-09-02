@@ -7,13 +7,13 @@ type GithubUploadAssetsOptions = GithubAuthenticationParams & {
   files: string
 }
 
-const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, files }: GithubUploadAssetsOptions) => {
+const uploadAssets = async ({ privateKey, owner, repo, releaseId, files }: GithubUploadAssetsOptions) => {
   if (!files) {
     console.log('No files to upload. Skipping.')
     return
   }
 
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
+  const appOctokit = await authenticate({ privateKey, owner, repo })
 
   await Promise.all(
     files
