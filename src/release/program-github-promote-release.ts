@@ -6,8 +6,9 @@ type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform: Platform
 }
 
-const getReleases = async ({ privateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
-  const appOctokit = await authenticate({ privateKey, owner, repo })
+const getReleases = async (options: GithubPromoteReleaseOptions) => {
+  const appOctokit = await authenticate(options)
+  const { owner, repo, platform } = options
 
   const releases = await appOctokit.rest.repos.listReleases({
     owner,
@@ -16,10 +17,11 @@ const getReleases = async ({ privateKey, owner, repo, platform }: GithubPromoteR
   return releases.data.filter(release => release.tag_name.includes(platform))
 }
 
-const promoteReleases = async ({ privateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
-  const releases = await getReleases({ privateKey, owner, repo, platform })
+const promoteReleases = async (options: GithubPromoteReleaseOptions) => {
+  const { owner, repo, platform } = options
+  const releases = await getReleases(options)
   const preReleases = releases.filter(release => release.prerelease)
-  const appOctokit = await authenticate({ privateKey, owner, repo })
+  const appOctokit = await authenticate(options)
   await Promise.all(
     preReleases.map(async preRelease => {
       const result = await appOctokit.rest.repos.updateRelease({
