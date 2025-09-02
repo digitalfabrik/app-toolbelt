@@ -9,7 +9,7 @@ type SentryReleaseOptions = {
 export default (parent: Command) =>
   parent
     .description('create a new release on sentry. This file uses the configuration from ./.sentryclirc')
-    .command('sentry-create <package-name> <version-name> <sourcemap-directory>')
+    .command('create <package-name> <version-name> <sourcemap-directory>')
     .requiredOption('--auth-token <auth-token>', 'the auth token')
     .option('--versionCode <version-code>', 'code of the version to release, this is only needed for react-native')
     .action(async (packageName, versionName, sourcemapDirectory, options: SentryReleaseOptions) => {
