@@ -48,7 +48,8 @@ type ReleaseInformation = {
   versionName: string
 }
 
-export const versionTagName = ({ platform, versionName }: ReleaseInformation): string => `${versionName}-${platform}`
+export const versionTagName = ({ platform, versionName }: ReleaseInformation): string =>
+  platform === PLATFORM_ALL ? versionName : `${versionName}-${platform}`
 
 const createTag = async (
   tagName: string,
@@ -120,7 +121,8 @@ export const createTags = async (
   await Promise.all(
     platforms.map(platform => {
       const tagName = versionTagName({ versionName, platform })
-      const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
+      const baseTagMessage = `${versionName} (${versionCode})`
+      const tagMessage = platform === PLATFORM_ALL ? baseTagMessage : `[${platform}] ${baseTagMessage}`
       return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
     }),
   )
