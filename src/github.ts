@@ -4,10 +4,14 @@ import { Platform, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './c
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 
+// https://github.com/apps/deliverino
+const DELIVERINO_APP_ID = '59249'
+
 export type GithubAuthenticationParams = {
   privateKey: string
   owner: string
   repo: string
+  githubApp: string
 }
 
 export const withGithubAuthentication = (command: Command) =>
@@ -15,12 +19,20 @@ export const withGithubAuthentication = (command: Command) =>
     .requiredOption('--private-key <private-key>', 'Private key of the github app as base64 pem format')
     .requiredOption('--owner <owner>', 'Github owner (e.g. "digitalfabrik")')
     .requiredOption('--repo <repo>', 'Github repository')
+    .option('--github-app <github-app>', 'Github app id', DELIVERINO_APP_ID)
 
-export const authenticate = async ({ privateKey, owner, repo }: GithubAuthenticationParams): Promise<Octokit> => {
-  const appId = 59249 // https://github.com/apps/deliverino
+export const authenticate = async ({
+  privateKey,
+  owner,
+  repo,
+  githubApp,
+}: GithubAuthenticationParams): Promise<Octokit> => {
   const decodedPrivateKey = Buffer.from(privateKey, 'base64').toString('ascii')
 
-  const octokit = new Octokit({ authStrategy: createAppAuth, auth: { appId, privateKey: decodedPrivateKey } })
+  const octokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: { appId: githubApp, privateKey: decodedPrivateKey },
+  })
   const {
     data: { id: installationId },
   } = await octokit.apps.getRepoInstallation({ owner, repo })
