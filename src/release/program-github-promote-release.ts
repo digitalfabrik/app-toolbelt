@@ -1,11 +1,6 @@
-import { Octokit } from '@octokit/rest'
-import { GetResponseTypeFromEndpointMethod } from '@octokit/types'
 import { Command } from 'commander'
 import { authenticate, GithubAuthenticationParams } from '../github.js'
 import { Platform } from '../constants.js'
-
-const octokit = new Octokit()
-type Releases = GetResponseTypeFromEndpointMethod<typeof octokit.repos.listReleases>
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform: Platform
@@ -14,7 +9,7 @@ type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
 const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
   const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
 
-  const releases: Releases = await appOctokit.rest.repos.listReleases({
+  const releases = await appOctokit.rest.repos.listReleases({
     owner,
     repo,
   })

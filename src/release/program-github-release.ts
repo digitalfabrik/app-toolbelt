@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 import { authenticate, createGithubRelease, GithubAuthenticationParams } from '../github.js'
 
-type GithubReleaseOptions = GithubAuthenticationParams & {
+export type GithubReleaseOptions = GithubAuthenticationParams & {
   productionRelease: boolean
   shouldUsePredefinedReleaseNotes: boolean
   releaseNotes?: string
@@ -36,17 +36,7 @@ export default (parent: Command) =>
 
         const appOctokit = await authenticate(options)
 
-        await createGithubRelease(
-          platform,
-          newVersionName,
-          newVersionCode,
-          appOctokit,
-          options.owner,
-          options.repo,
-          options.productionRelease,
-          options.shouldUsePredefinedReleaseNotes,
-          options.releaseNotes,
-        )
+        await createGithubRelease(platform, newVersionName, newVersionCode, appOctokit, options)
       } catch (e) {
         console.error(e)
         process.exit(1)

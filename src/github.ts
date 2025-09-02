@@ -1,6 +1,7 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
 import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
+import { GithubReleaseOptions } from './release/program-github-release.js'
 
 export type GithubAuthenticationParams = {
   deliverinoPrivateKey: string
@@ -136,12 +137,9 @@ export const createGithubRelease = async (
   newVersionName: string,
   newVersionCode: number,
   appOctokit: Octokit,
-  owner: string,
-  repo: string,
-  productionRelease: boolean,
-  shouldUsePredefinedReleaseNotes: boolean,
-  predefinedReleaseNotes?: string,
+  options: GithubReleaseOptions,
 ) => {
+  const { owner, repo, productionRelease, shouldUsePredefinedReleaseNotes, releaseNotes } = options
   const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
@@ -153,8 +151,8 @@ export const createGithubRelease = async (
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
     body:
-      shouldUsePredefinedReleaseNotes && predefinedReleaseNotes
-        ? predefinedReleaseNotes
+      shouldUsePredefinedReleaseNotes && releaseNotes
+        ? releaseNotes
         : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName),
   })
   console.log(release.data.id)
