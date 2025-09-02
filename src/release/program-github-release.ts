@@ -11,11 +11,8 @@ export default (parent: Command) => {
   const command = parent
     .description('creates a new release for the specified platform')
     .command('create <platform> <new-version-name> <new-version-code>')
-    .option('--production-release', 'whether this is a production release or not. If unset false', false)
-    .option(
-      '--release-notes <release-notes>',
-      'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated',
-    )
+    .option('--production-release', 'Whether this is a production or a pre-release.', false)
+    .option('--release-notes <release-notes>', 'The release notes as JSON string, will be auto-generated otherwise.')
     .action(
       async (platform: Platform, newVersionName: string, newVersionCode: string, options: GithubReleaseOptions) => {
         try {
