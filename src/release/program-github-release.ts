@@ -4,7 +4,6 @@ import { Platform } from '../constants.js'
 
 export type GithubReleaseOptions = GithubAuthenticationParams & {
   productionRelease: boolean
-  shouldUsePredefinedReleaseNotes: boolean
   releaseNotes?: string
 }
 
@@ -13,11 +12,6 @@ export default (parent: Command) => {
     .description('creates a new release for the specified platform')
     .command('create <platform> <new-version-name> <new-version-code>')
     .option('--production-release', 'whether this is a production release or not. If unset false', false)
-    .option(
-      '--should-use-predefined-release-notes',
-      'whether predefined release notes should be used or not. Release notes have to be passed if set. If unset false',
-      false,
-    )
     .option(
       '--release-notes <release-notes>',
       'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated',
