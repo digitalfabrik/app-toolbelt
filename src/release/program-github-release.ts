@@ -1,5 +1,6 @@
 import { Command } from 'commander'
 import { authenticate, createGithubRelease, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
+import { Platform } from '../constants.js'
 
 export type GithubReleaseOptions = GithubAuthenticationParams & {
   productionRelease: boolean
@@ -21,20 +22,22 @@ export default (parent: Command) => {
       '--release-notes <release-notes>',
       'the release notes (for the selected platform) as JSON string. If not defined the release notes will be generated',
     )
-    .action(async (platform, newVersionName, newVersionCode, options: GithubReleaseOptions) => {
-      try {
-        const versionCode = parseInt(newVersionCode, 10)
-        if (Number.isNaN(versionCode)) {
-          throw new Error(`Failed to parse version code string: ${newVersionCode}`)
+    .action(
+      async (platform: Platform, newVersionName: string, newVersionCode: string, options: GithubReleaseOptions) => {
+        try {
+          const versionCode = parseInt(newVersionCode, 10)
+          if (Number.isNaN(versionCode)) {
+            throw new Error(`Failed to parse version code string: ${newVersionCode}`)
+          }
+
+          const appOctokit = await authenticate(options)
+
+          await createGithubRelease(platform, newVersionName, versionCode, appOctokit, options)
+        } catch (e) {
+          console.error(e)
+          process.exit(1)
         }
-
-        const appOctokit = await authenticate(options)
-
-        await createGithubRelease(platform, newVersionName, newVersionCode, appOctokit, options)
-      } catch (e) {
-        console.error(e)
-        process.exit(1)
-      }
-    })
+      },
+    )
   return withGithubAuthentication(command)
 }
