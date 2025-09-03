@@ -1,16 +1,29 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
 import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
+import { GithubReleaseOptions } from './release/program-github-release.js'
+import { Command } from 'commander'
+
+export type GithubAuthenticationParams = {
+  deliverinoPrivateKey: string
+  owner: string
+  repo: string
+}
+
+export const withGithubAuthentication = (command: Command) =>
+  command
+    .requiredOption(
+      '--deliverino-private-key <deliverino-private-key>',
+      'Private key of the github app as base64 pem format',
+    )
+    .requiredOption('--owner <owner>', 'Github owner (e.g. "digitalfabrik")')
+    .requiredOption('--repo <repo>', 'Github repository')
 
 export const authenticate = async ({
   deliverinoPrivateKey,
   owner,
   repo,
-}: {
-  deliverinoPrivateKey: string
-  owner: string
-  repo: string
-}): Promise<Octokit> => {
+}: GithubAuthenticationParams): Promise<Octokit> => {
   const appId = 59249 // https://github.com/apps/deliverino
   const privateKey = Buffer.from(deliverinoPrivateKey, 'base64').toString('ascii')
 
@@ -134,12 +147,9 @@ export const createGithubRelease = async (
   newVersionName: string,
   newVersionCode: number,
   appOctokit: Octokit,
-  owner: string,
-  repo: string,
-  productionRelease: boolean,
-  shouldUsePredefinedReleaseNotes: boolean,
-  predefinedReleaseNotes?: string,
+  options: GithubReleaseOptions,
 ) => {
+  const { owner, repo, productionRelease, shouldUsePredefinedReleaseNotes, releaseNotes } = options
   const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
@@ -151,8 +161,8 @@ export const createGithubRelease = async (
     make_latest: platform === 'android' ? 'true' : 'false',
     name: releaseName,
     body:
-      shouldUsePredefinedReleaseNotes && predefinedReleaseNotes
-        ? predefinedReleaseNotes
+      shouldUsePredefinedReleaseNotes && releaseNotes
+        ? releaseNotes
         : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName),
   })
   console.log(release.data.id)

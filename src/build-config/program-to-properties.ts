@@ -1,17 +1,21 @@
 import { Command } from 'commander'
 import { asKeyValues, loadBuildConfig } from './loader.js'
+import { Platform } from '../constants.js'
+
+type ToPropertiesOptions = {
+  buildConfigDirectory: string
+}
 
 export default (parent: Command) =>
   parent
-    .command('to-properties <build-config-name>')
-    .argument('platform')
+    .description('create and write a new properties file to the stdout')
+    .command('to-properties <build-config-name> <platform>')
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',
       './build-configs',
     )
-    .description('create and write a new properties file to the stdout')
-    .action(async (buildConfigName, platform, options: { [key: string]: any }) => {
+    .action(async (buildConfigName: string, platform: Platform, options: ToPropertiesOptions) => {
       try {
         const buildConfig = await loadBuildConfig(buildConfigName, platform, options.buildConfigDirectory)
         const properties = asKeyValues(buildConfig, buildConfigName, platform)

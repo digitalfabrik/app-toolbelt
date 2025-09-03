@@ -1,16 +1,13 @@
 import { Command } from 'commander'
 import fs from 'node:fs'
-import { authenticate } from '../github.js'
+import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
 
-type Options = {
-  deliverinoPrivateKey: string
-  owner: string
-  repo: string
+type GithubUploadAssetsOptions = GithubAuthenticationParams & {
   releaseId: number
   files: string
 }
 
-const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, files }: Options) => {
+const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, files }: GithubUploadAssetsOptions) => {
   if (!files) {
     console.log('No files to upload. Skipping.')
     return
@@ -37,19 +34,13 @@ const uploadAssets = async ({ deliverinoPrivateKey, owner, repo, releaseId, file
   )
 }
 
-export default (parent: Command) =>
-  parent
-    .command('upload')
+export default (parent: Command) => {
+  const command = parent
     .description('Upload a release asset to github')
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'private key of the deliverino github app in pem format with base64 encoding',
-    )
-    .requiredOption('--owner <owner>', 'owner of the current repository, usually "digitalfabrik"')
-    .requiredOption('--repo <repo>', 'the current repository, should be integreat-app')
+    .command('upload')
     .requiredOption('--releaseId <releaseId>', 'The unique identifier of the release.')
     .requiredOption('--files <files>', 'The name of the files to upload.')
-    .action(async (options: Options) => {
+    .action(async (options: GithubUploadAssetsOptions) => {
       try {
         await uploadAssets(options)
       } catch (e) {
@@ -57,3 +48,5 @@ export default (parent: Command) =>
         process.exit(1)
       }
     })
+  return withGithubAuthentication(command)
+}
