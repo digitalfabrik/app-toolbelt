@@ -1,13 +1,14 @@
 import { Command } from 'commander'
 import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
-import { Platform } from '../constants.js'
+import { Platform, PLATFORMS_FLAGGED_LATEST } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform: Platform
 }
 
-const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
+const getReleases = async (options: GithubPromoteReleaseOptions) => {
+  const appOctokit = await authenticate(options)
+  const { owner, repo, platform } = options
 
   const releases = await appOctokit.rest.repos.listReleases({
     owner,
@@ -16,13 +17,11 @@ const getReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: Gith
   return releases.data.filter(release => release.tag_name.includes(platform))
 }
 
-const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: GithubPromoteReleaseOptions) => {
-  const releases = await getReleases({ deliverinoPrivateKey, owner, repo, platform })
+const promoteReleases = async (options: GithubPromoteReleaseOptions) => {
+  const { owner, repo, platform } = options
+  const releases = await getReleases(options)
   const preReleases = releases.filter(release => release.prerelease)
-  // For integreat we always want platform android to be the latest release, so a link to the latest github release will go to the apk
-  // For entitlementcard and lunes we always want platform all to be the lastest release
-  const platformsFlaggedLatest = ['android', 'native', 'all']
-  const appOctokit = await authenticate({ deliverinoPrivateKey, owner, repo })
+  const appOctokit = await authenticate(options)
   await Promise.all(
     preReleases.map(async preRelease => {
       const result = await appOctokit.rest.repos.updateRelease({
@@ -30,7 +29,7 @@ const promoteReleases = async ({ deliverinoPrivateKey, owner, repo, platform }: 
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: platformsFlaggedLatest.includes(platform) ? 'true' : 'false',
+        make_latest: PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     }),

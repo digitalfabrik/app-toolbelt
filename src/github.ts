@@ -1,33 +1,38 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORMS, VERSION_FILE } from './constants.js'
+import { Platform, PLATFORM_ALL, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 
+// https://github.com/apps/deliverino
+const DELIVERINO_APP_ID = '59249'
+
 export type GithubAuthenticationParams = {
-  deliverinoPrivateKey: string
+  privateKey: string
   owner: string
   repo: string
+  githubApp: string
 }
 
 export const withGithubAuthentication = (command: Command) =>
   command
-    .requiredOption(
-      '--deliverino-private-key <deliverino-private-key>',
-      'Private key of the github app as base64 pem format',
-    )
+    .requiredOption('--private-key <private-key>', 'Github app private key as base64 pem format')
     .requiredOption('--owner <owner>', 'Github owner (e.g. "digitalfabrik")')
     .requiredOption('--repo <repo>', 'Github repository')
+    .option('--github-app <github-app>', 'Github app id', DELIVERINO_APP_ID)
 
 export const authenticate = async ({
-  deliverinoPrivateKey,
+  privateKey,
   owner,
   repo,
+  githubApp,
 }: GithubAuthenticationParams): Promise<Octokit> => {
-  const appId = 59249 // https://github.com/apps/deliverino
-  const privateKey = Buffer.from(deliverinoPrivateKey, 'base64').toString('ascii')
+  const decodedPrivateKey = Buffer.from(privateKey, 'base64').toString('ascii')
 
-  const octokit = new Octokit({ authStrategy: createAppAuth, auth: { appId, privateKey } })
+  const octokit = new Octokit({
+    authStrategy: createAppAuth,
+    auth: { appId: githubApp, privateKey: decodedPrivateKey },
+  })
   const {
     data: { id: installationId },
   } = await octokit.apps.getRepoInstallation({ owner, repo })
@@ -43,7 +48,8 @@ type ReleaseInformation = {
   versionName: string
 }
 
-export const versionTagName = ({ platform, versionName }: ReleaseInformation): string => `${versionName}-${platform}`
+export const versionTagName = ({ platform, versionName }: ReleaseInformation): string =>
+  platform === PLATFORM_ALL ? versionName : `${versionName}-${platform}`
 
 const createTag = async (
   tagName: string,
@@ -115,7 +121,8 @@ export const createTags = async (
   await Promise.all(
     platforms.map(platform => {
       const tagName = versionTagName({ versionName, platform })
-      const tagMessage = `[${platform}] ${versionName} - ${versionCode}`
+      const baseTagMessage = `${versionName} (${versionCode})`
+      const tagMessage = platform === PLATFORM_ALL ? baseTagMessage : `[${platform}] ${baseTagMessage}`
       return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
     }),
   )
@@ -149,8 +156,9 @@ export const createGithubRelease = async (
   appOctokit: Octokit,
   options: GithubReleaseOptions,
 ) => {
-  const { owner, repo, productionRelease, shouldUsePredefinedReleaseNotes, releaseNotes } = options
-  const releaseName = `[${platform}] ${newVersionName} - ${newVersionCode}`
+  const { owner, repo, productionRelease, releaseNotes } = options
+  const baseReleaseName = `${newVersionName} (${newVersionCode})`
+  const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const tagName = versionTagName({ versionName: newVersionName, platform })
 
   const release = await appOctokit.repos.createRelease({
@@ -158,12 +166,9 @@ export const createGithubRelease = async (
     repo,
     tag_name: tagName,
     prerelease: !productionRelease,
-    make_latest: platform === 'android' ? 'true' : 'false',
+    make_latest: productionRelease && PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
     name: releaseName,
-    body:
-      shouldUsePredefinedReleaseNotes && releaseNotes
-        ? releaseNotes
-        : await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName),
+    body: releaseNotes ?? (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName)),
   })
   console.log(release.data.id)
 }
