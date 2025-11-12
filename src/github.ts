@@ -1,6 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
-import { Platform, PLATFORM_ALL, PLATFORMS, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
+import { Platform, PLATFORM_ALL, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 
@@ -43,15 +43,7 @@ export const authenticate = async ({
   return new Octokit({ auth: token })
 }
 
-type ReleaseInformation = {
-  platform: (typeof PLATFORMS)[number]
-  versionName: string
-}
-
-export const versionTagName = ({ platform, versionName }: ReleaseInformation): string =>
-  platform === PLATFORM_ALL ? versionName : `${versionName}-${platform}`
-
-const createTag = async (
+export const createTag = async (
   tagName: string,
   tagMessage: string,
   owner: string,
@@ -108,26 +100,6 @@ export const commitVersion = async (
   return commit.data.commit.sha
 }
 
-export const createTags = async (
-  versionName: string,
-  versionCode: number,
-  commitSha: string,
-  owner: string,
-  repo: string,
-  appOctokit: Octokit,
-  predefinedPlatforms?: Platform[],
-) => {
-  const platforms = predefinedPlatforms ? predefinedPlatforms : PLATFORMS
-  await Promise.all(
-    platforms.map(platform => {
-      const tagName = versionTagName({ versionName, platform })
-      const baseTagMessage = `${versionName} (${versionCode})`
-      const tagMessage = platform === PLATFORM_ALL ? baseTagMessage : `[${platform}] ${baseTagMessage}`
-      return createTag(tagName, tagMessage, owner, repo, commitSha!, appOctokit)
-    }),
-  )
-}
-
 const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string =>
   `POST /repos/${owner}/${repo}/releases/generate-notes`
 
@@ -159,16 +131,15 @@ export const createGithubRelease = async (
   const { owner, repo, productionRelease, releaseNotes } = options
   const baseReleaseName = `${newVersionName} (${newVersionCode})`
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
-  const tagName = versionTagName({ versionName: newVersionName, platform })
 
   const release = await appOctokit.repos.createRelease({
     owner,
     repo,
-    tag_name: tagName,
+    tag_name: newVersionName,
     prerelease: !productionRelease,
     make_latest: productionRelease && PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
     name: releaseName,
-    body: releaseNotes ?? (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, tagName)),
+    body: releaseNotes ?? (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, newVersionName)),
   })
   console.log(release.data.id)
 }
