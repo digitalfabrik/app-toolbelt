@@ -3,6 +3,7 @@ import { Octokit } from '@octokit/rest'
 import { Platform, PLATFORM_ALL, PLATFORMS_FLAGGED_LATEST, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
+import { formatReleaseNotesForMattermost } from './util.js'
 
 // https://github.com/apps/deliverino
 const DELIVERINO_APP_ID = '59249'
@@ -115,7 +116,14 @@ const generateReleaseNotesFromGithubEndpoint = async (
       repo,
       tag_name: tagName,
     })
-    return response.data.body
+    const generatedReleaseNotes = response.data.body
+    return (
+      generatedReleaseNotes
+        .split('\n')
+        // Link github issues in PR names
+        .map((line: string) => line.replace(/^\* (\d+):/g, `* [#$1](https://github.com/${owner}/${repo}/issues/$1):`))
+        .join('\n')
+    )
   } catch (e) {
     throw new Error("Couldn't get release notes")
   }
@@ -128,9 +136,11 @@ export const createGithubRelease = async (
   appOctokit: Octokit,
   options: GithubReleaseOptions,
 ) => {
-  const { owner, repo, productionRelease, releaseNotes } = options
+  const { owner, repo, productionRelease, releaseNotes: suppliedReleaseNotes } = options
   const baseReleaseName = `${newVersionName} (${newVersionCode})`
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
+  const releaseNotes =
+    suppliedReleaseNotes ?? (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, newVersionName))
 
   const release = await appOctokit.repos.createRelease({
     owner,
@@ -139,7 +149,13 @@ export const createGithubRelease = async (
     prerelease: !productionRelease,
     make_latest: productionRelease && PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
     name: releaseName,
-    body: releaseNotes ?? (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, newVersionName)),
+    body: releaseNotes,
   })
-  console.log(release.data.id)
+
+  console.log(
+    JSON.stringify({
+      id: release.data.id,
+      releaseNotes: formatReleaseNotesForMattermost(releaseNotes).replaceAll('\n', '\\n'),
+    }),
+  )
 }
