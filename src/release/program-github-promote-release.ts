@@ -15,7 +15,7 @@ const getReleases = async (options: GithubPromoteReleaseOptions) => {
     repo,
   })
 
-  if (!platform) {
+  if (!platform || platform === PLATFORM_ALL) {
     return releases.data
   }
   return releases.data.filter(release => release.name?.includes(platform))
