@@ -1,6 +1,6 @@
 import { Command } from 'commander'
 import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
-import { Platform } from '../constants.js'
+import { Platform, PLATFORM_ALL } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform?: Platform
