@@ -23,5 +23,5 @@ Existing commands can be called by, e.g.
 ## Updates and breaking changes
 
 - Breaking changes should be marked with a `breaking` label and a description what has to be changed when updating to that version.
-- Breaking changing should always include a minor version update.
+- Breaking changes should always include a minor version update.
 - To update the package, increase the version in the `package.json`, run `npm install` and commit the changes.
