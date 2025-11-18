@@ -55,9 +55,7 @@ export default (parent: Command) => {
       try {
         const promotedRelease = await promoteReleases(options)
         if (promotedRelease) {
-          console.log(
-            `The most recent beta version was promoted to production:\n[${promotedRelease.name}](${promotedRelease.html_url})`,
-          )
+          console.log(`[${promotedRelease.name}](${promotedRelease.html_url})`)
         }
       } catch (e) {
         console.error(e)
