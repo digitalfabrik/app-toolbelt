@@ -1,9 +1,9 @@
 import { Command } from 'commander'
 import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
-import { Platform, PLATFORMS_FLAGGED_LATEST } from '../constants.js'
+import { Platform, PLATFORM_ALL } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
-  platform: Platform
+  platform?: Platform
 }
 
 const getReleases = async (options: GithubPromoteReleaseOptions) => {
@@ -14,11 +14,15 @@ const getReleases = async (options: GithubPromoteReleaseOptions) => {
     owner,
     repo,
   })
-  return releases.data.filter(release => release.tag_name.includes(platform))
+
+  if (!platform || platform === PLATFORM_ALL) {
+    return releases.data
+  }
+  return releases.data.filter(release => release.name?.includes(platform))
 }
 
-const promoteReleases = async (options: GithubPromoteReleaseOptions) => {
-  const { owner, repo, platform } = options
+const promoteReleases = async (options: GithubAuthenticationParams) => {
+  const { owner, repo } = options
   const releases = await getReleases(options)
   const preReleases = releases.filter(release => release.prerelease)
   const appOctokit = await authenticate(options)
@@ -29,7 +33,7 @@ const promoteReleases = async (options: GithubPromoteReleaseOptions) => {
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: PLATFORMS_FLAGGED_LATEST.includes(platform) ? 'true' : 'false',
+        make_latest: 'true',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     }),
@@ -46,7 +50,7 @@ export default (parent: Command) => {
   const command = parent
     .description('Remove pre-release flag from the latest release')
     .command('promote')
-    .requiredOption('--platform <platform>')
+    .option('--platform <platform>')
     .action(async (options: GithubPromoteReleaseOptions) => {
       try {
         const promotedRelease = await promoteReleases(options)
