@@ -2,7 +2,7 @@
 
 exports[`stability test build-config 1`] = `"Usage: whitelabel v0 build-config [options] [command] create and write a new plist file to the output directory Options: -h, --help display help for command Commands: to-bash [options] <build-config-name> <platform> to-json [options] <build-config-name> <platform> to-properties [options] <build-config-name> <platform> write-xcconfig [options] <build_config_name> <platform> write-plist [options] <build-config-name> <output-name> help [command] display help for command"`;
 
-exports[`stability test notify 1`] = `"Usage: whitelabel v0 notify [options] [command] Send a message to a mattermost channel Options: -h, --help display help for command Commands: mattermost [options] help [command] display help for command"`;
+exports[`stability test notify 1`] = `"Usage: whitelabel v0 notify [options] [command] Send a review comment to a pull request on github Options: -h, --help display help for command Commands: mattermost [options] github-pr [options] <pr-number> <message> help [command] display help for command"`;
 
 exports[`stability test release 1`] = `"Usage: whitelabel v0 release [options] [command] Remove pre-release flag from the latest release Options: -h, --help display help for command Commands: bump-to [options] <new-version-name> <new-version-code> create [options] <platform> <new-version-name> <new-version-code> upload [options] promote [options] help [command] display help for command"`;
 
@@ -10,6 +10,6 @@ exports[`stability test release-notes 1`] = `"Usage: whitelabel v0 release-notes
 
 exports[`stability test sentry 1`] = `"Usage: whitelabel v0 sentry [options] [command] create a new release on sentry. This file uses the configuration from ./.sentryclirc Options: -h, --help display help for command Commands: create [options] <package-name> <version-name> <sourcemap-directory> help [command] display help for command"`;
 
-exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes prepare metadata for store version calculate the next version build-config create and write a new plist file to the output directory release Remove pre-release flag from the latest release sentry create a new release on sentry. This file uses the configuration from ./.sentryclirc notify Send a message to a mattermost channel help [command] display help for command"`;
+exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes prepare metadata for store version calculate the next version build-config create and write a new plist file to the output directory release Remove pre-release flag from the latest release sentry create a new release on sentry. This file uses the configuration from ./.sentryclirc notify Send a review comment to a pull request on github help [command] display help for command"`;
 
 exports[`stability test version 1`] = `"Usage: whitelabel v0 version [options] [command] calculate the next version Options: -h, --help display help for command Commands: calc help [command] display help for command"`;
