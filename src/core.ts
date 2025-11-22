@@ -15,6 +15,7 @@ import githubPromoteRelease from './release/program-github-promote-release.js'
 import sentryRelease from './sentry/program-sentry-release.js'
 import notify from './notify/notify.js'
 import packageJson from '../package.json' with { type: 'json' }
+import notifyGithub from './notify/notifyGithub.js'
 
 const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
   let root = new Command().version(packageJson.version).option('-d, --debug', 'enable extreme logging')
@@ -51,6 +52,7 @@ const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
 
   const notifyCommand = v0.command('notify')
   notify(notifyCommand)
+  notifyGithub(notifyCommand)
 
   return root
 }

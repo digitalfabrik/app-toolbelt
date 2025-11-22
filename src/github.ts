@@ -159,3 +159,19 @@ export const createGithubRelease = async (
     }),
   )
 }
+
+export const createPullRequestReview = async (
+  prNumber: number,
+  message: string,
+  authenticationParams: GithubAuthenticationParams,
+  appOctokit: Octokit,
+) => {
+  const review = await appOctokit.pulls.createReview({
+    owner: authenticationParams.owner,
+    repo: authenticationParams.repo,
+    pull_number: prNumber,
+    event: 'COMMENT',
+    body: message,
+  })
+  console.log(review.status)
+}
