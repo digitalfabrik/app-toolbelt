@@ -27,13 +27,14 @@ const promoteReleases = async (options: GithubAuthenticationParams) => {
   const preReleases = releases.filter(release => release.prerelease)
   const appOctokit = await authenticate(options)
   await Promise.all(
-    preReleases.map(async preRelease => {
+    preReleases.map(async (preRelease, index) => {
+      const isLatest = index === 0
       const result = await appOctokit.rest.repos.updateRelease({
         owner,
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: 'true',
+        make_latest: isLatest ? 'true' : 'false',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     }),
