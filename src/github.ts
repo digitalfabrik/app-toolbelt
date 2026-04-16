@@ -125,6 +125,7 @@ const generateReleaseNotesFromGithubEndpoint = async (
         .join('\n')
     )
   } catch (e) {
+    console.log('test')
     throw new Error("Couldn't get release notes")
   }
 }
