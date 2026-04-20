@@ -124,19 +124,23 @@ const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string =>
 
 // For hotfixes we only get a list of commits since previous tag
 // We try to group the commits via prefix/issue nr. If thats not possible we show them ungrouped.
-const groupLinesByIssue = async (
-  lines: string[],
+const groupReleaseNotesByIssue = async (
+  releaseNotes: string,
   owner: string,
   repo: string,
   appOctokit: Octokit,
-): Promise<string[]> => {
-  const issueNumbers = [...new Set(lines.map(line => line.match(/^\* (\d+):/)?.[1]).filter(Boolean))] as string[]
+): Promise<string> => {
+  const lines = releaseNotes.split('\n')
+  const commitMessagePattern = /^\* (\d+):/
+  const issueNumbers = [
+    ...new Set(lines.map(line => line.match(commitMessagePattern)?.[1]).filter((it): it is string => it !== undefined)),
+  ]
 
   if (issueNumbers.length === 0) {
-    return lines
+    return releaseNotes
   }
 
-  const ungrouped = lines.filter(line => !line.match(/^\* (\d+):/) && !line.includes('deliverino'))
+  const ungrouped = lines.filter(line => !line.match(commitMessagePattern) && !line.includes('deliverino'))
 
   const result: string[] = []
   for (const issueNumber of issueNumbers) {
@@ -144,7 +148,7 @@ const groupLinesByIssue = async (
     result.push(`* #${issueNumber}: ${issue.title}`)
   }
   result.push(...ungrouped)
-  return result
+  return result.join('\n')
 }
 
 const generateReleaseNotesFromGithubEndpoint = async (
@@ -160,11 +164,11 @@ const generateReleaseNotesFromGithubEndpoint = async (
       owner,
       repo,
       tag_name: tagName,
-      ...(previousTagName ? { previous_tag_name: previousTagName } : {}),
+      previous_tag_name: previousTagName,
     })
     const generatedReleaseNotes = response.data.body
     if (hotfix) {
-      return (await groupLinesByIssue(generatedReleaseNotes.split('\n'), owner, repo, appOctokit)).join('\n')
+      return await groupReleaseNotesByIssue(generatedReleaseNotes, owner, repo, appOctokit)
     }
     return (
       generatedReleaseNotes
