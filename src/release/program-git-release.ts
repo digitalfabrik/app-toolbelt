@@ -6,8 +6,7 @@ import {
   GithubAuthenticationParams,
   withGithubAuthentication,
 } from '../github.js'
-
-const MAIN_BRANCH = 'main'
+import { MAIN_BRANCH } from '../release-notes/constants.js'
 
 type GithubBumpVersionOptions = GithubAuthenticationParams & {
   branch: string
@@ -32,8 +31,8 @@ export default (parent: Command) => {
           throw new Error(`Failed to parse version code string: ${newVersionCode}`)
         }
 
-        if (hotfix && !tagOnly && branch === MAIN_BRANCH) {
-          throw new Error('--hotfix cannot be used on the main branch.')
+        if (hotfix && (tagOnly || branch === MAIN_BRANCH)) {
+          throw new Error('--hotfix cannot be used on the main branch or together with the --tag-only option.')
         }
 
         const commitSha = tagOnly
@@ -46,7 +45,7 @@ export default (parent: Command) => {
         const tagMessage = `${newVersionName} (${versionCode})`
         await createTag(newVersionName, tagMessage, owner, repo, commitSha, appOctokit)
 
-        if (hotfix && !tagOnly) {
+        if (hotfix) {
           await commitVersion(newVersionName, versionCode, owner, repo, MAIN_BRANCH, appOctokit)
         }
       } catch (e) {
