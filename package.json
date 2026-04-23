@@ -25,7 +25,7 @@
     "commander": "^13.1.0",
     "decamelize": "^6.0.0",
     "flat": "^6.0.1",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^4.1.1",
     "node-fetch": "^3.3.2",
     "oauth": "^0.10.0",
     "tsx": "^4.1.3",
