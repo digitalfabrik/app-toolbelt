@@ -1,8 +1,9 @@
 {
   "include": ["src/**/*"],
   "compilerOptions": {
-    "baseUrl": "./src",
+    "types": ["jest"],
     "outDir": "dist",
+    "rootDir": "./src",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "allowSyntheticDefaultImports": true,
