@@ -101,29 +101,42 @@ export const commitVersion = async (
   return commit.data.commit.sha
 }
 
-const findBaseTagForBranch = async (
+/**
+ * Walks the branch commits newest-first and finds the first commit whose parent
+ * is a tagged commit. That parent is the commit the branch was cut from.
+ */
+const findPreviousTagForBranch = async (
   owner: string,
   repo: string,
   branch: string,
   appOctokit: Octokit,
 ): Promise<string> => {
-  const comparison = await appOctokit.repos.compareCommits({ owner, repo, base: 'main', head: branch })
-  const mergeBaseSha = comparison.data.merge_base_commit.sha
+  const [commits, tags] = await Promise.all([
+    appOctokit.repos.listCommits({ owner, repo, sha: branch, per_page: 100 }),
+    appOctokit.repos.listTags({ owner, repo, per_page: 100 }),
+  ])
 
-  const tags = await appOctokit.repos.listTags({ owner, repo, per_page: 100 })
-  const baseTag = tags.data.find(tag => tag.commit.sha === mergeBaseSha)
+  const tagsBySha = new Map(tags.data.map(tag => [tag.commit.sha, tag.name]))
 
-  if (!baseTag) {
-    throw new Error(`Could not find a tag matching the merge base commit ${mergeBaseSha}`)
+  const tagName = commits.data
+    .flatMap(commit => commit.parents)
+    .map(parent => tagsBySha.get(parent.sha))
+    .find(Boolean)
+
+  if (!tagName) {
+    throw new Error(`Could not find a tag in the commit history of branch ${branch}`)
   }
-  return baseTag.name
+  return tagName
 }
 
 const getGithubApiUrlForReleaseNotes = (owner: string, repo: string): string =>
   `POST /repos/${owner}/${repo}/releases/generate-notes`
 
-// For hotfixes we only get a list of commits since previous tag
-// We try to group the commits via prefix/issue nr. If thats not possible we show them ungrouped.
+/**
+ * For hotfixes we only get a list of commits since previous tag
+ * We try to group the commits via prefix/issue nr. If thats not possible we show them ungrouped.
+ */
+
 const groupReleaseNotesByIssue = async (
   releaseNotes: string,
   owner: string,
@@ -136,19 +149,38 @@ const groupReleaseNotesByIssue = async (
     ...new Set(lines.map(line => line.match(commitMessagePattern)?.[1]).filter((it): it is string => it !== undefined)),
   ]
 
-  if (issueNumbers.length === 0) {
-    return releaseNotes
-  }
+  return issueNumbers.length === 0
+    ? releaseNotes
+    : [
+        // Issues grouped by commit message
+        ...(await Promise.all(
+          issueNumbers.map(async issueNumber => {
+            const { data: issue } = await appOctokit.issues.get({
+              owner,
+              repo,
+              issue_number: parseInt(issueNumber, 10),
+            })
+            return `* #${issueNumber}: ${issue.title}`
+          }),
+        )),
+        // Ungrouped commits
+        ...lines.filter(line => !line.match(commitMessagePattern)),
+      ].join('\n')
+}
 
-  const ungrouped = lines.filter(line => !line.match(commitMessagePattern) && !line.includes('deliverino'))
-
-  const result: string[] = []
-  for (const issueNumber of issueNumbers) {
-    const { data: issue } = await appOctokit.issues.get({ owner, repo, issue_number: parseInt(issueNumber, 10) })
-    result.push(`* #${issueNumber}: ${issue.title}`)
-  }
-  result.push(...ungrouped)
-  return result.join('\n')
+const generateHotfixReleaseNotes = async (
+  owner: string,
+  repo: string,
+  appOctokit: Octokit,
+  previousTagName: string,
+  branch: string,
+): Promise<string> => {
+  const comparison = await appOctokit.repos.compareCommits({ owner, repo, base: previousTagName, head: branch })
+  const releaseNotes = comparison.data.commits
+    .filter(c => c.author?.login !== 'deliverino[bot]')
+    .map(c => `* ${c.commit.message.split('\n')[0]}`)
+    .join('\n')
+  return groupReleaseNotesByIssue(releaseNotes, owner, repo, appOctokit)
 }
 
 const generateReleaseNotesFromGithubEndpoint = async (
@@ -157,21 +189,20 @@ const generateReleaseNotesFromGithubEndpoint = async (
   appOctokit: Octokit,
   tagName: string,
   previousTagName?: string,
-  hotfix?: boolean,
+  branch?: string,
 ): Promise<string> => {
   try {
+    if (previousTagName && branch) {
+      return await generateHotfixReleaseNotes(owner, repo, appOctokit, previousTagName, branch)
+    }
     const response = await appOctokit.request(getGithubApiUrlForReleaseNotes(owner, repo), {
       owner,
       repo,
       tag_name: tagName,
       previous_tag_name: previousTagName,
     })
-    const generatedReleaseNotes = response.data.body
-    if (hotfix) {
-      return await groupReleaseNotesByIssue(generatedReleaseNotes, owner, repo, appOctokit)
-    }
     return (
-      generatedReleaseNotes
+      response.data.body
         .split('\n')
         // Link github issues in PR names
         .map((line: string) => line.replace(/^\* (\d+):/g, `* [#$1](https://github.com/${owner}/${repo}/issues/$1):`))
@@ -192,10 +223,10 @@ export const createGithubRelease = async (
   const { owner, repo, productionRelease, releaseNotes: suppliedReleaseNotes, hotfix, branch } = options
   const baseReleaseName = `${newVersionName} (${newVersionCode})`
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
-  const previousTagName = hotfix && branch ? await findBaseTagForBranch(owner, repo, branch, appOctokit) : undefined
+  const previousTagName = hotfix && branch ? await findPreviousTagForBranch(owner, repo, branch, appOctokit) : undefined
   const releaseNotes =
     suppliedReleaseNotes ??
-    (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, newVersionName, previousTagName, hotfix))
+    (await generateReleaseNotesFromGithubEndpoint(owner, repo, appOctokit, newVersionName, previousTagName, branch))
 
   const release = await appOctokit.repos.createRelease({
     owner,
