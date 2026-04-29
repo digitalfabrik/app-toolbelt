@@ -3,19 +3,22 @@ import { CommanderError } from 'commander'
 
 const getCommandOutput = (args: readonly string[]) => {
   let output = ''
-  let command = buildCommand(err => {
-    throw err
-  }).configureOutput({
-    writeOut: (str: string) => {
-      output += str
+  let command = buildCommand(
+    err => {
+      throw err
     },
-    writeErr: (str: string) => {
-      output += str
+    {
+      writeOut: (str: string) => {
+        output += str
+      },
+      writeErr: (str: string) => {
+        output += str
+      },
+      outputError: (str: string) => {
+        output += str
+      },
     },
-    outputError: (str: string, write: (str: string) => void) => {
-      output += str
-    },
-  })
+  )
 
   let argv = ['node', 'whitelabel', ...args]
   try {

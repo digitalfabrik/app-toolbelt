@@ -1,4 +1,4 @@
-import { CommanderError, Command } from 'commander'
+import { CommanderError, Command, type OutputConfiguration } from 'commander'
 import parseReleaseNotes from './release-notes/program-parse-release-notes.js'
 import moveToProgram from './release-notes/program-move-to.js'
 import prepareMetadata from './release-notes/program-prepare-metadata.js'
@@ -17,11 +17,17 @@ import notify from './notify/notify.js'
 import packageJson from '../package.json' with { type: 'json' }
 import notifyGithub from './notify/notifyGithub.js'
 
-const buildCommand = (exitOverride?: (err: CommanderError) => never | void) => {
+const buildCommand = (
+  exitOverride?: (err: CommanderError) => never | void,
+  outputConfiguration?: OutputConfiguration,
+) => {
   let root = new Command().version(packageJson.version).option('-d, --debug', 'enable extreme logging')
 
   if (exitOverride) {
     root.exitOverride(exitOverride)
+  }
+  if (outputConfiguration) {
+    root.configureOutput(outputConfiguration)
   }
 
   const v0 = root.command('v0')

@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import SentryCli from '@sentry/cli'
+import { SentryCli } from '@sentry/cli'
 
 type SentryReleaseOptions = {
   authToken: string
@@ -24,7 +24,7 @@ export default (parent: Command) =>
           version += `+${versionCode}`
         }
 
-        let sentryCli = new SentryCli()
+        let sentryCli = new SentryCli(null, {})
 
         await sentryCli.execute(['releases', 'new', version, '--finalize'], true)
         await sentryCli.execute(

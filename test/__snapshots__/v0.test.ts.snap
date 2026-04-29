@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`stability test build-config 1`] = `"Usage: whitelabel v0 build-config [options] [command] create and write a new plist file to the output directory Options: -h, --help display help for command Commands: to-bash [options] <build-config-name> <platform> to-json [options] <build-config-name> <platform> to-properties [options] <build-config-name> <platform> write-xcconfig [options] <build_config_name> <platform> write-plist [options] <build-config-name> <output-name> help [command] display help for command"`;
 
