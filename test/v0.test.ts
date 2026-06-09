@@ -60,4 +60,8 @@ describe('stability test', () => {
   test('sentry', () => {
     expect(getCommandOutput(['v0', 'sentry'])).toMatchSnapshot()
   })
+
+  test('screenshots', () => {
+    expect(getCommandOutput(['v0', 'screenshots'])).toMatchSnapshot()
+  })
 })
