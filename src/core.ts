@@ -16,7 +16,7 @@ import sentryRelease from './sentry/program-sentry-release.js'
 import notify from './notify/notify.js'
 import packageJson from '../package.json' with { type: 'json' }
 import notifyGithub from './notify/notifyGithub.js'
-import updateScreenshots from './screenshots/program-open-pr.js'
+import openPr from './pr/program-open-pr.js'
 
 const buildCommand = (
   exitOverride?: (err: CommanderError) => never | void,
@@ -61,8 +61,8 @@ const buildCommand = (
   notify(notifyCommand)
   notifyGithub(notifyCommand)
 
-  const screenshotsCommand = v0.command('screenshots')
-  updateScreenshots(screenshotsCommand)
+  const prCommand = v0.command('pr')
+  openPr(prCommand)
 
   return root
 }
