@@ -17,6 +17,7 @@
   "dependencies": {
     "@expo/plist": "^0.5.2",
     "@octokit/auth-app": "^8.2.0",
+    "@octokit/plugin-throttling": "^11.0.3",
     "@octokit/rest": "^22.0.1",
     "@sentry/cli": "^3.4.0",
     "@types/flat": "^5.0.5",

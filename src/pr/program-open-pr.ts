@@ -46,7 +46,11 @@ const commitFiles = async (appOctokit: Octokit, files: string[], options: Github
 }
 
 // Reset the head branch to the given commit, creating the branch if it doesn't exist yet
-const resetHeadBranch = async (appOctokit: Octokit, options: GithubOpenPrOptions, sha: string): Promise<void> => {
+const resetHeadBranchToCommit = async (
+  appOctokit: Octokit,
+  options: GithubOpenPrOptions,
+  commitSha: string,
+): Promise<void> => {
   const { owner, repo, head } = options
 
   const headExists = await appOctokit.repos
@@ -60,9 +64,9 @@ const resetHeadBranch = async (appOctokit: Octokit, options: GithubOpenPrOptions
     })
 
   if (headExists) {
-    await appOctokit.git.updateRef({ owner, repo, ref: `heads/${head}`, sha, force: true })
+    await appOctokit.git.updateRef({ owner, repo, ref: `heads/${head}`, sha: commitSha, force: true })
   } else {
-    await appOctokit.git.createRef({ owner, repo, ref: `refs/heads/${head}`, sha })
+    await appOctokit.git.createRef({ owner, repo, ref: `refs/heads/${head}`, sha: commitSha })
   }
 }
 
@@ -90,8 +94,8 @@ const commitFilesAndOpenPullRequest = async (files: string[], options: GithubOpe
   }
 
   const appOctokit = await authenticate(options)
-  const sha = await commitFiles(appOctokit, files, options)
-  await resetHeadBranch(appOctokit, options, sha)
+  const commitSha = await commitFiles(appOctokit, files, options)
+  await resetHeadBranchToCommit(appOctokit, options, commitSha)
   await openPullRequest(appOctokit, options)
 }
 
