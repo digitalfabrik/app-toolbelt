@@ -1,5 +1,6 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
+import { throttling, ThrottlingOptions } from '@octokit/plugin-throttling'
 import { Platform, PLATFORM_ALL, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
@@ -22,6 +23,27 @@ export const withGithubAuthentication = (command: Command) =>
     .requiredOption('--repo <repo>', 'Github repository')
     .option('--github-app <github-app>', 'Github app id', DELIVERINO_APP_ID)
 
+// https://github.com/octokit/plugin-throttling.js/
+const ThrottledOctokit = Octokit.plugin(throttling)
+
+const MAX_RATE_LIMIT_RETRIES = 2
+
+type RateLimitedRequest = { method: string; url: string }
+
+const throttle: ThrottlingOptions = {
+  onRateLimit: (retryAfter: number, request: RateLimitedRequest, _octokit: unknown, retryCount: number) => {
+    console.warn(`Request quota exhausted for request ${request.method} ${request.url}.`)
+    if (retryCount < MAX_RATE_LIMIT_RETRIES) {
+      console.warn(`Retrying after ${retryAfter}s.`)
+      return true
+    }
+  },
+  onSecondaryRateLimit: (_retryAfter: number, request: RateLimitedRequest) => {
+    // Do not retry, only log a warning
+    console.warn(`Secondary rate limit detected for request ${request.method} ${request.url}.`)
+  },
+}
+
 export const authenticate = async ({
   privateKey,
   owner,
@@ -30,9 +52,10 @@ export const authenticate = async ({
 }: GithubAuthenticationParams): Promise<Octokit> => {
   const decodedPrivateKey = Buffer.from(privateKey, 'base64').toString('ascii')
 
-  const octokit = new Octokit({
+  const octokit = new ThrottledOctokit({
     authStrategy: createAppAuth,
     auth: { appId: githubApp, privateKey: decodedPrivateKey },
+    throttle,
   })
   const {
     data: { id: installationId },
@@ -41,7 +64,7 @@ export const authenticate = async ({
     data: { token },
   } = await octokit.apps.createInstallationAccessToken({ installation_id: installationId })
 
-  return new Octokit({ auth: token })
+  return new ThrottledOctokit({ auth: token, throttle })
 }
 
 export const createTag = async (
