@@ -32,6 +32,13 @@ export default (parent: Command) => {
           SYFT_FORMAT_SPDX_JSON_PRETTY: 'true',
         }
 
+        try {
+          execSync('syft version', { stdio: 'ignore' })
+        } catch {
+          console.log('syft not found, installing...')
+          execSync('curl -sSfL https://get.anchore.io/syft | sudo sh -s -- -b /usr/local/bin', { stdio: 'inherit' })
+        }
+
         console.log(`Generating SBOM for ${sourceName}@${versionName}`)
         execSync(`syft scan . -o spdx-json=${tmpFile}`, { env, stdio: 'inherit' })
 
