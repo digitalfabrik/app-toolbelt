@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import * as process from 'process'
+import * as process from 'node:process'
 import fetch from 'node-fetch'
 
 type MattermostNotifyOptions = {

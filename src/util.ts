@@ -1,5 +1,5 @@
-import path from 'path'
-import fs from 'fs'
+import path from 'node:path'
+import fs from 'node:fs'
 
 export const nonNullablePredicate = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
@@ -33,3 +33,8 @@ export const formatReleaseNotesForMattermost = (releaseNotes: string): string =>
     .join('\n')
     // Remove maintenance section and PRs
     .replace(/\n#+ Maintenance[\s\S]*/g, '')
+
+function pathExists(...rest: string[]): string | null {
+  const currentPath = path.resolve(...rest)
+  return fs.existsSync(currentPath) ? currentPath : null
+}

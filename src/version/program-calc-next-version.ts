@@ -1,5 +1,5 @@
 import { Command } from 'commander'
-import fs from 'fs'
+import fs from 'node:fs'
 
 import { VERSION_FILE } from '../constants.js'
 import { findPathInParents } from '../util.js'
