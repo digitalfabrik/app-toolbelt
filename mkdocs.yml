@@ -1,0 +1,38 @@
+site_name: app-toolbelt
+site_url: https://digitalfabrik.github.io/app-toolbelt/
+repo_url: https://github.com/digitalfabrik/app-toolbelt
+repo_name: digitalfabrik/app-toolbelt
+
+theme:
+  name: material
+  features:
+    - navigation.sections
+    - navigation.expand
+
+nav:
+  - Home: index.md
+  - Commands:
+      - release-notes:
+          - parse-release-notes: commands/release-notes/parse-release-notes.md
+          - move-to: commands/release-notes/move-to.md
+          - prepare-metadata: commands/release-notes/prepare-metadata.md
+      - version:
+          - calc: commands/version/calc.md
+      - build-config:
+          - to-bash: commands/build-config/to-bash.md
+          - to-json: commands/build-config/to-json.md
+          - to-properties: commands/build-config/to-properties.md
+          - write-xcconfig: commands/build-config/write-xcconfig.md
+          - write-plist: commands/build-config/write-plist.md
+      - release:
+          - bump-to: commands/release/bump-to.md
+          - create: commands/release/create.md
+          - upload: commands/release/upload.md
+          - promote: commands/release/promote.md
+      - sentry:
+          - create: commands/sentry/create.md
+      - notify:
+          - mattermost: commands/notify/mattermost.md
+          - github-pr: commands/notify/github-pr.md
+      - pr:
+          - open-pr: commands/pr/open-pr.md
