@@ -1,20 +1,20 @@
-import path from 'node:path'
+import { resolve, join } from 'node:path'
 import fs from 'node:fs'
 
 export const nonNullablePredicate = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const findPathInParents = (name: string, directory: string = '.'): string => {
+export const findPathInParents = (...pathSegments: string[]): string => {
   let currentDirectory = process.cwd()
 
   for (let i = 0; i < 8; i++) {
-    const currentPath = path.resolve(currentDirectory, directory, name)
+    const currentPath = resolve(currentDirectory, ...pathSegments)
     if (fs.existsSync(currentPath)) {
       return currentPath
     }
-    currentDirectory = path.resolve(currentDirectory, '..')
+    currentDirectory = resolve(currentDirectory, '..')
   }
 
-  throw new Error(`${name} not found in ${path.resolve(process.cwd(), directory)} or parent directories!`)
+  throw new Error(`${join(...pathSegments)} not found in ${resolve(process.cwd())} or parent directories!`)
 }
 
 const LINES_TO_REMOVE = ["## What's Changed", '**Full Changelog**', '<!--']
@@ -33,8 +33,3 @@ export const formatReleaseNotesForMattermost = (releaseNotes: string): string =>
     .join('\n')
     // Remove maintenance section and PRs
     .replace(/\n#+ Maintenance[\s\S]*/g, '')
-
-function pathExists(...rest: string[]): string | null {
-  const currentPath = path.resolve(...rest)
-  return fs.existsSync(currentPath) ? currentPath : null
-}

@@ -22,7 +22,7 @@ export const loadBuildConfig = async (
     throw Error(`Invalid platform supplied: ${platform}`)
   }
 
-  const buildConfig = (await import(findPathInParents(buildConfigName, buildConfigDirectory))).default
+  const buildConfig = (await import(findPathInParents(buildConfigDirectory, buildConfigName))).default
 
   if (!buildConfig) {
     throw Error(`Invalid BUILD_CONFIG_NAME supplied: ${buildConfigName}`)
