@@ -25,3 +25,10 @@ Existing commands can be called by, e.g.
 - Breaking changes should be marked with a `breaking` label and a description what has to be changed when updating to that version.
 - Breaking changes should always include a minor version update.
 - To update the package, increase the version in the `package.json`, run `npm install` and commit the changes.
+
+## Documentation
+
+https://digitalfabrik.github.io/app-toolbelt/
+
+- On every commit on main the docs will be regenerated and deployed.
+- Important!!! Please add a proper description when adding a new command and also update the `mkdocs.yml` for navigation.
