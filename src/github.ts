@@ -239,12 +239,12 @@ const generateReleaseNotesFromGithubEndpoint = async (
 export const createGithubRelease = async (
   platform: Platform,
   newVersionName: string,
-  newVersionCode: number,
+  newVersionCode: number | undefined,
   appOctokit: Octokit,
   options: GithubReleaseOptions,
 ) => {
   const { owner, repo, productionRelease, releaseNotes: suppliedReleaseNotes, hotfix, branch } = options
-  const baseReleaseName = `${newVersionName} (${newVersionCode})`
+  const baseReleaseName = newVersionCode !== undefined ? `${newVersionName} (${newVersionCode})` : newVersionName
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const previousTagName = hotfix && branch ? await findPreviousTagForBranch(owner, repo, branch, appOctokit) : undefined
   const releaseNotes =
