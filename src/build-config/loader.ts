@@ -24,10 +24,15 @@ export const loadBuildConfig = async (
     throw Error(`Invalid platform supplied: ${platform}`)
   }
 
-  const buildConfigPath = findPathInParents(buildConfigDirectory, buildConfigName)
+  const buildConfigPath =
+    findPathInParents(buildConfigDirectory, 'src', buildConfigName) ??
+    findPathInParents(buildConfigDirectory, buildConfigName)
 
   if (!buildConfigPath) {
-    throw new Error(`${join(buildConfigDirectory, buildConfigName)} not found in ${process.cwd()} or parent directories!`)
+    throw new Error(
+      `No '${join(buildConfigDirectory, 'src', buildConfigName)}' or ` +
+        `'${join(buildConfigDirectory, buildConfigName)}' found in ${process.cwd()} or parent directories!`,
+    )
   }
 
   const buildConfig = (await import(buildConfigPath)).default
