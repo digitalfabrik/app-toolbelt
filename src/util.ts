@@ -1,9 +1,9 @@
-import { resolve, join } from 'node:path'
+import { resolve } from 'node:path'
 import fs from 'node:fs'
 
 export const nonNullablePredicate = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const findPathInParents = (...pathSegments: string[]): string => {
+export const findPathInParents = (...pathSegments: string[]): string | undefined => {
   let currentDirectory = process.cwd()
 
   for (let i = 0; i < 8; i++) {
@@ -13,8 +13,6 @@ export const findPathInParents = (...pathSegments: string[]): string => {
     }
     currentDirectory = resolve(currentDirectory, '..')
   }
-
-  throw new Error(`${join(...pathSegments)} not found in ${resolve(process.cwd())} or parent directories!`)
 }
 
 const LINES_TO_REMOVE = ["## What's Changed", '**Full Changelog**', '<!--']
