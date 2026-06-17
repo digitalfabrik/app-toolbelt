@@ -9,6 +9,8 @@
   },
   "scripts": {
     "build": "tsc --build",
+    "docs:generate": "npx tsx scripts/generate-docs.ts",
+    "docs:deploy": "mkdocs gh-deploy",
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:updateSnapshot": "NODE_OPTIONS='--experimental-vm-modules' jest test/v0.test.ts -u",
     "prettier:check": "prettier --check .",
