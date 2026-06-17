@@ -8,8 +8,8 @@ type SentryReleaseOptions = {
 
 export default (parent: Command) =>
   parent
-    .description('create a new release on sentry. This file uses the configuration from ./.sentryclirc')
     .command('create')
+    .description('create a new release on sentry. This file uses the configuration from ./.sentryclirc')
     .argument('package-name', 'package name under which to release')
     .argument('version-name', 'name of the version to release')
     .argument('sourcemap-directory', 'relative path to the directory where the sourcemap is')

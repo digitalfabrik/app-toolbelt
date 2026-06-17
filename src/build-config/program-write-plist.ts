@@ -12,8 +12,8 @@ type Options = {
 
 export default (parent: Command) =>
   parent
-    .description('create and write a new plist file to the output directory')
     .command('write-plist <build-config-name> <output-name>')
+    .description('create and write a new plist file to the output directory')
     .requiredOption('--directory <directory>', 'the directory to put the created plist file in')
     .option('--build-config-directory <directory>', 'the directory with the build configs', './build-configs')
     .option('--namespace <namespace>', 'the namespace with the keys to put in the plist', 'googleServices')

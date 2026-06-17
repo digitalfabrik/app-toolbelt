@@ -49,8 +49,8 @@ const promoteReleases = async (options: GithubAuthenticationParams) => {
 
 export default (parent: Command) => {
   const command = parent
-    .description('Remove pre-release flag from the latest release')
     .command('promote')
+    .description('Remove pre-release flag from the latest release')
     .option('--platform <platform>')
     .action(async (options: GithubPromoteReleaseOptions) => {
       try {

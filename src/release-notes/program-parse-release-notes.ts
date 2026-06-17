@@ -82,8 +82,8 @@ export const parseNotesProgram = (options: ParseProgramOptionsType) => {
 
 export default (parent: Command) =>
   parent
-    .description('parse, output the release notes as JSON string and write them to the specified file')
     .command('parse-release-notes')
+    .description('parse, output the release notes as JSON string and write them to the specified file')
     .requiredOption(
       '--source <source>',
       'the directory of the release notes to parse',

@@ -37,8 +37,8 @@ const uploadAssets = async (options: GithubUploadAssetsOptions) => {
 
 export default (parent: Command) => {
   const command = parent
-    .description('Upload a release asset to github')
     .command('upload')
+    .description('Upload a release asset to github')
     .requiredOption('--releaseId <releaseId>', 'The unique identifier of the release.')
     .requiredOption('--files <files>', 'The name of the files to upload.')
     .action(async (options: GithubUploadAssetsOptions) => {

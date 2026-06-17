@@ -47,8 +47,8 @@ const writeMetadata = (appName: string, storeName: string, metadataDirectory: st
 
 export default (parent: Command) =>
   parent
-    .description('prepare metadata for store')
     .command('prepare-metadata <app-name> <store-name> <metadata-directory>')
+    .description('prepare metadata for store')
     .option(
       '--override-version-name <override-version-name>',
       'if specified the release notes will be generated from the specified version name instead of the unreleased notes',

@@ -16,8 +16,8 @@ type GithubBumpVersionOptions = GithubAuthenticationParams & {
 
 export default (parent: Command) => {
   const command = parent
-    .description('Bump and tag the latest version')
     .command('bump-to <new-version-name> <new-version-code>')
+    .description('Bump and tag the latest version')
     .requiredOption('--branch <branch>', 'the current branch')
     .option('--tag-only', 'Only tag the latest commit instead of bumping the version.', false)
     .option('--hotfix', 'Also bump the version on the main branch.', false)

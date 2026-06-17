@@ -8,8 +8,8 @@ type ToBashOptions = {
 
 export default (parent: Command) =>
   parent
-    .description('outputs the specified build config as key-value pairs which can be executed by bash')
     .command('to-bash <build-config-name> <platform>')
+    .description('outputs the specified build config as key-value pairs which can be executed by bash')
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',

@@ -96,8 +96,8 @@ const moveReleaseNotes = async (newVersionName: string, options: GithubMoveRelea
 
 export default (parent: Command) => {
   const command = parent
-    .description("move the release notes in 'unreleased' to a new subdirectory <new-version-name>")
     .command('move-to <new-version-name>')
+    .description("move the release notes in 'unreleased' to a new subdirectory <new-version-name>")
     .requiredOption('--branch <branch>', 'the current branch')
     .action(async (newVersionName: string, options: GithubMoveReleaseNotesOptions) => {
       try {
