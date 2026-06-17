@@ -6,25 +6,36 @@ import path from 'node:path'
 import { authenticate, GithubAuthenticationParams, withGithubAuthentication } from '../github.js'
 
 type CommitSbomOptions = GithubAuthenticationParams & {
-  repoPath: string
-  branch: string
+  repoPath?: string
+  branch?: string
   versionName: string
   sourceName: string
+  releaseId?: number
 }
 
 export default (parent: Command) => {
   const command = parent
-    .description('Generate an SBOM using syft and commit it to the repository')
+    .description('Generate an SBOM using syft and commit it to the repository or/and uploads it to a GitHub release')
     .command('sbom')
-    .requiredOption('--repo-path <repo-path>', 'Path where the SBOM file will be stored in the repository')
-    .requiredOption('--branch <branch>', 'The branch to commit the SBOM to')
     .requiredOption('--version-name <version-name>', 'The version name for the commit message')
     .requiredOption('--source-name <source-name>', 'The source name for the SBOM (SYFT_SOURCE_NAME)')
+    .option(
+      '--repo-path <repo-path>',
+      'Path with filename where the SBOM file will be stored in the repository. If omitted, the SBOM will not be committed.',
+    )
+    .option('--branch <branch>', 'The branch to commit the SBOM to. Required when --repo-path is set.')
+    .option('--release-id <release-id>', 'If provided, the SBOM will also be uploaded to this GitHub release.')
     .action(async (options: CommitSbomOptions) => {
-      try {
-        const { repoPath, branch, versionName, sourceName, owner, repo } = options
+      const { repoPath, branch, versionName, sourceName, releaseId, owner, repo } = options
 
-        const tmpFile = path.join(os.tmpdir(), 'manifest.spdx.json')
+      if (!releaseId && !repoPath && !branch) {
+        console.log('Either --release-id or --repo-path and --branch must be set.')
+        return
+      }
+
+      try {
+        const fileName = repoPath ? path.basename(repoPath) : 'manifest.spdx.json'
+        const tmpFile = path.join(os.tmpdir(), fileName)
         const env = {
           ...process.env,
           SYFT_SOURCE_VERSION: versionName,
@@ -44,29 +55,43 @@ export default (parent: Command) => {
 
         const appOctokit = await authenticate(options)
 
-        const contentBase64 = fs.readFileSync(tmpFile).toString('base64')
+        if (repoPath && branch) {
+          const contentBase64 = fs.readFileSync(tmpFile).toString('base64')
 
-        let sha: string | undefined
-        try {
-          const existing = await appOctokit.repos.getContent({ owner, repo, path: repoPath, ref: branch })
-          if (!Array.isArray(existing.data)) {
-            sha = existing.data.sha
+          let sha: string | undefined
+          try {
+            const existing = await appOctokit.repos.getContent({ owner, repo, path: repoPath, ref: branch })
+            if (!Array.isArray(existing.data)) {
+              sha = existing.data.sha
+            }
+          } catch (e) {
+            console.error(e)
           }
-        } catch (e) {
-          console.error(e)
+
+          await appOctokit.repos.createOrUpdateFileContents({
+            owner,
+            repo,
+            path: repoPath,
+            branch,
+            message: `Add SBOM for ${versionName}\n[skip ci]`,
+            content: contentBase64,
+            ...(sha ? { sha } : {}),
+          })
+
+          console.log(`SBOM committed to ${repoPath} on ${branch}`)
         }
 
-        await appOctokit.repos.createOrUpdateFileContents({
-          owner,
-          repo,
-          path: repoPath,
-          branch,
-          message: `Add SBOM for ${versionName}\n[skip ci]`,
-          content: contentBase64,
-          ...(sha ? { sha } : {}),
-        })
-
-        console.log(`SBOM committed to ${repoPath} on ${branch}`)
+        if (releaseId) {
+          const fileData = fs.readFileSync(tmpFile)
+          await appOctokit.rest.repos.uploadReleaseAsset({
+            owner,
+            repo,
+            release_id: releaseId,
+            name: 'manifest.spdx.json',
+            data: fileData as unknown as string,
+          })
+          console.log('SBOM uploaded to release')
+        }
       } catch (e) {
         console.error(e)
         process.exit(1)
