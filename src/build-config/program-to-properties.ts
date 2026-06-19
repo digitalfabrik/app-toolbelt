@@ -8,8 +8,8 @@ type ToPropertiesOptions = {
 
 export default (parent: Command) =>
   parent
-    .description('create and write a new properties file to the stdout')
     .command('to-properties <build-config-name> <platform>')
+    .description('create and write a new properties file to the stdout')
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',

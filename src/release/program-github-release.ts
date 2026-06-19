@@ -11,8 +11,8 @@ export type GithubReleaseOptions = GithubAuthenticationParams & {
 
 export default (parent: Command) => {
   const command = parent
-    .description('creates a new release for the specified platform')
     .command('create <platform> <new-version-name> <new-version-code>')
+    .description('creates a new release for the specified platform')
     .option('--production-release', 'Whether this is a production or a pre-release.', false)
     .option('--release-notes <release-notes>', 'The release notes as JSON string, will be auto-generated otherwise.')
     .option('--hotfix', 'Generate release notes only from changes since the branch was cut.', false)

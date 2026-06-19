@@ -10,8 +10,8 @@ type WriteXcConfigOptions = {
 
 export default (parent: Command) =>
   parent
-    .description('create and write a new buildConfig.tmp.xcconfig to the output directory')
     .command('write-xcconfig <build_config_name> <platform>')
+    .description('create and write a new buildConfig.tmp.xcconfig to the output directory')
     .requiredOption('--directory <directory>', 'the directory to put the created xcconfig file in')
     .option(
       '--build-config-directory <directory>',

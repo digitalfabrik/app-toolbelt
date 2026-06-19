@@ -8,8 +8,8 @@ type ToJsonOptions = {
 
 export default (parent: Command) =>
   parent
-    .description('outputs the specified build config as JSON')
     .command('to-json  <build-config-name> <platform>')
+    .description('outputs the specified build config as JSON')
     .option(
       '--build-config-directory <directory>',
       'Change build config directory from the default ./build-configs',

@@ -10,8 +10,8 @@ type MattermostNotifyOptions = {
 
 export default (parent: Command) => {
   parent
-    .description('Send a message to a mattermost channel')
     .command('mattermost')
+    .description('Send a message to a mattermost channel')
     .option('--message <message>', 'The message that should be sent')
     .option('--channel <channel>', '')
     .option('--allow-all-branches', '')
