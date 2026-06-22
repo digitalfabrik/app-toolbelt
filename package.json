@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "bin": {
-    "app-toolbelt": "bin/app-toolbelt"
+    "app-toolbelt": "dist/start.js"
   },
   "scripts": {
     "build": "tsc --build",
