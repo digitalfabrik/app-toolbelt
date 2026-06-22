@@ -24,14 +24,19 @@ export const loadBuildConfig = async (
     throw Error(`Invalid platform supplied: ${platform}`)
   }
 
-  const buildConfigPath =
-    findPathInParents(buildConfigDirectory, 'src', buildConfigName) ??
-    findPathInParents(buildConfigDirectory, buildConfigName)
+  const configSearchPaths = [
+    [buildConfigDirectory, 'dist', buildConfigName, 'index.js'],
+    [buildConfigDirectory, buildConfigName, 'index.js'],
+  ]
+
+  const buildConfigPath = configSearchPaths.reduce<string | undefined>(
+    (acc, pathSegments) => acc ?? findPathInParents(...pathSegments),
+    undefined,
+  )
 
   if (!buildConfigPath) {
     throw new Error(
-      `No '${join(buildConfigDirectory, 'src', buildConfigName)}' or ` +
-        `'${join(buildConfigDirectory, buildConfigName)}' found in ${process.cwd()} or parent directories!`,
+      `No ${configSearchPaths.map(p => join(...p)).join(' or ')} found in ${process.cwd()} or parent directories!`,
     )
   }
 
