@@ -14,7 +14,8 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:updateSnapshot": "NODE_OPTIONS='--experimental-vm-modules' jest test/v0.test.ts -u",
     "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write ."
+    "prettier:fix": "prettier --write .",
+    "prepack": "npm run build"
   },
   "dependencies": {
     "@expo/plist": "^0.5.2",
