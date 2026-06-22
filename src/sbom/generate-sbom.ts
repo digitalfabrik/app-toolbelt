@@ -99,7 +99,7 @@ export default (parent: Command) => {
             owner,
             repo,
             release_id: releaseId,
-            name: 'manifest.spdx.json',
+            name: 'sbom.spdx.json',
             data: fileData.toString(),
           })
           console.log('SBOM uploaded to release')
