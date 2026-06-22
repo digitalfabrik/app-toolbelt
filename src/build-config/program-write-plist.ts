@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { Command } from 'commander'
 import plist from '@expo/plist'
 import { loadBuildConfig, toSnakeCase } from './loader.js'
