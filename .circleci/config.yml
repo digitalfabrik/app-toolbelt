@@ -10,6 +10,9 @@ jobs:
       - run: npm run prettier:check
       - run: npm run build
       - run: npm run test
+      - run:
+          name: Check docs are up to date
+          command: npm run docs:generate && git diff --exit-code docs/ mkdocs.yml
 
 workflows:
   build_and_test:
