@@ -12,6 +12,6 @@ exports[`stability test release-notes 1`] = `"Usage: whitelabel v0 release-notes
 
 exports[`stability test sentry 1`] = `"Usage: whitelabel v0 sentry [options] [command] Options: -h, --help display help for command Commands: create [options] <package-name> <version-name> <sourcemap-directory> create a new release on sentry. This file uses the configuration from ./.sentryclirc help [command] display help for command"`;
 
-exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes version Manage version build-config release sentry notify pr help [command] display help for command"`;
+exports[`stability test v0 1`] = `"Usage: whitelabel v0 [options] [command] Options: -h, --help display help for command Commands: release-notes version Manage version build-config release sentry notify pr generate help [command] display help for command"`;
 
 exports[`stability test version 1`] = `"Usage: whitelabel v0 version [options] [command] Manage version Options: -h, --help display help for command Commands: calc calculate the next version help [command] display help for command"`;
