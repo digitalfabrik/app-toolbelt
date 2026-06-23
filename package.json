@@ -5,7 +5,7 @@
   "private": true,
   "type": "module",
   "bin": {
-    "app-toolbelt": "dist/start.js"
+    "app-toolbelt": "bin/app-toolbelt"
   },
   "scripts": {
     "build": "tsc --build",
@@ -14,12 +14,8 @@
     "test": "NODE_OPTIONS='--experimental-vm-modules' jest",
     "test:updateSnapshot": "NODE_OPTIONS='--experimental-vm-modules' jest test/v0.test.ts -u",
     "prettier:check": "prettier --check .",
-    "prettier:fix": "prettier --write .",
-    "prepack": "npm run build"
+    "prettier:fix": "prettier --write ."
   },
-  "files": [
-    "dist"
-  ],
   "dependencies": {
     "@expo/plist": "^0.5.2",
     "@octokit/auth-app": "^8.2.0",
