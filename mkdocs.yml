@@ -36,3 +36,5 @@ nav:
           - github-pr: commands/notify/github-pr.md
       - pr:
           - open-pr: commands/pr/open-pr.md
+      - generate:
+          - sbom: commands/generate/sbom.md
