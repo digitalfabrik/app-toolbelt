@@ -11,16 +11,21 @@ export type GithubReleaseOptions = GithubAuthenticationParams & {
 
 export default (parent: Command) => {
   const command = parent
-    .command('create <platform> <new-version-name> <new-version-code>')
+    .command('create <platform> <new-version-name> [new-version-code]')
     .description('creates a new release for the specified platform')
     .option('--production-release', 'Whether this is a production or a pre-release.', false)
     .option('--release-notes <release-notes>', 'The release notes as JSON string, will be auto-generated otherwise.')
     .option('--hotfix', 'Generate release notes only from changes since the branch was cut.', false)
     .option('--branch <branch>', 'The current branch, required when --hotfix is set.')
     .action(
-      async (platform: Platform, newVersionName: string, newVersionCode: string, options: GithubReleaseOptions) => {
+      async (
+        platform: Platform,
+        newVersionName: string,
+        newVersionCode: string | undefined,
+        options: GithubReleaseOptions,
+      ) => {
         try {
-          const versionCode = parseInt(newVersionCode, 10)
+          const versionCode = newVersionCode ? parseInt(newVersionCode, 10) : undefined
           if (Number.isNaN(versionCode)) {
             throw new Error(`Failed to parse version code string: ${newVersionCode}`)
           }

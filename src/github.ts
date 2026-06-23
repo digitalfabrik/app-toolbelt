@@ -97,7 +97,7 @@ export const createTag = async (
 
 export const commitVersion = async (
   versionName: string,
-  versionCode: number,
+  versionCode: number | undefined,
   owner: string,
   repo: string,
   branch: string,
@@ -105,9 +105,13 @@ export const commitVersion = async (
 ): Promise<string | undefined> => {
   const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
 
-  const contentBase64 = Buffer.from(JSON.stringify({ versionName, versionCode })).toString('base64')
+  const versionContent = versionCode !== undefined ? { versionName, versionCode } : { versionName }
+  const contentBase64 = Buffer.from(JSON.stringify(versionContent)).toString('base64')
 
-  const commitMessage = `Bump version name to ${versionName} and version code to ${versionCode}\n[skip ci]`
+  const commitMessage =
+    versionCode !== undefined
+      ? `Bump version name to ${versionName} and version code to ${versionCode}\n[skip ci]`
+      : `Bump version name to ${versionName}\n[skip ci]`
 
   const commit = await appOctokit.repos.createOrUpdateFileContents({
     owner,
@@ -239,12 +243,12 @@ const generateReleaseNotesFromGithubEndpoint = async (
 export const createGithubRelease = async (
   platform: Platform,
   newVersionName: string,
-  newVersionCode: number,
+  newVersionCode: number | undefined,
   appOctokit: Octokit,
   options: GithubReleaseOptions,
 ) => {
   const { owner, repo, productionRelease, releaseNotes: suppliedReleaseNotes, hotfix, branch } = options
-  const baseReleaseName = `${newVersionName} (${newVersionCode})`
+  const baseReleaseName = newVersionCode !== undefined ? `${newVersionName} (${newVersionCode})` : newVersionName
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const previousTagName = hotfix && branch ? await findPreviousTagForBranch(owner, repo, branch, appOctokit) : undefined
   const releaseNotes =
