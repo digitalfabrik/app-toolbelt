@@ -11,8 +11,13 @@ const ensureSyftInstalled = () => {
   try {
     execSync('syft version', { stdio: 'ignore' })
   } catch {
+    if (!process.env['CI']) {
+      throw new Error(
+        'syft is not installed or not in PATH. Please install it manually, e.g. via brew install syft or mise use syft.',
+      )
+    }
     console.log('syft not found, installing...')
-    execSync('curl -sSfL https://get.anchore.io/syft | sudo sh -s -- -b /usr/local/bin', { stdio: 'inherit' })
+    execSync('curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin', { stdio: 'inherit' })
   }
 }
 
@@ -57,7 +62,7 @@ export default (parent: Command) => {
         process.exit(1)
       }
       if (!releaseId && !path) {
-        console.error('Either --release-id or both --path and --branch must be provided.')
+        console.error('Either --release-id or each of --path, --branch and --version-name must be provided.')
         process.exit(1)
       }
 
