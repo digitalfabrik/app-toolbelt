@@ -1,4 +1,4 @@
-import fs from 'fs'
+import fs from 'node:fs'
 import { Command } from 'commander'
 import { asKeyValues, loadBuildConfig } from './loader.js'
 import { Platform } from '../constants.js'

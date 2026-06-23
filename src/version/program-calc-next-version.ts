@@ -1,11 +1,17 @@
 import { Command } from 'commander'
-import fs from 'fs'
+import fs from 'node:fs'
 
 import { VERSION_FILE } from '../constants.js'
 import { findPathInParents } from '../util.js'
 
 const calculateNewVersion = () => {
-  const versionFile = fs.readFileSync(findPathInParents(VERSION_FILE), 'utf-8')
+  const versionFilePath = findPathInParents(VERSION_FILE)
+
+  if (!versionFilePath) {
+    throw new Error(`${VERSION_FILE} not found in ${process.cwd()} or parent directories!`)
+  }
+
+  const versionFile = fs.readFileSync(versionFilePath, 'utf-8')
   // versionCode is just used in the integreat-react-native-app
   const { versionName, versionCode } = JSON.parse(versionFile)
   const versionNameParts = versionName.split('.').map((it: string) => parseInt(it, 10))

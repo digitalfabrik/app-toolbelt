@@ -1,20 +1,18 @@
-import path from 'path'
-import fs from 'fs'
+import { resolve } from 'node:path'
+import fs from 'node:fs'
 
 export const nonNullablePredicate = <T>(value: T): value is NonNullable<T> => value !== null && value !== undefined
 
-export const findPathInParents = (name: string, directory: string = '.'): string => {
+export const findPathInParents = (...pathSegments: string[]): string | undefined => {
   let currentDirectory = process.cwd()
 
   for (let i = 0; i < 8; i++) {
-    const currentPath = path.resolve(currentDirectory, directory, name)
+    const currentPath = resolve(currentDirectory, ...pathSegments)
     if (fs.existsSync(currentPath)) {
       return currentPath
     }
-    currentDirectory = path.resolve(currentDirectory, '..')
+    currentDirectory = resolve(currentDirectory, '..')
   }
-
-  throw new Error(`${name} not found in ${path.resolve(process.cwd(), directory)} or parent directories!`)
 }
 
 const LINES_TO_REMOVE = ["## What's Changed", '**Full Changelog**', '<!--']

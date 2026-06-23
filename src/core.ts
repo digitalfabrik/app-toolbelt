@@ -17,6 +17,7 @@ import notify from './notify/notify.js'
 import packageJson from '../package.json' with { type: 'json' }
 import notifyGithub from './notify/notifyGithub.js'
 import openPr from './pr/program-open-pr.js'
+import generateSbom from './sbom/generate-sbom.js'
 
 const buildCommand = (
   exitOverride?: (err: CommanderError) => never | void,
@@ -63,6 +64,9 @@ const buildCommand = (
 
   const prCommand = v0.command('pr')
   openPr(prCommand)
+
+  const generateCommand = v0.command('generate')
+  generateSbom(generateCommand)
 
   return root
 }
