@@ -247,7 +247,7 @@ export const createGithubRelease = async (
   appOctokit: Octokit,
   options: GithubReleaseOptions,
 ) => {
-  const { owner, repo, productionRelease, releaseNotes: suppliedReleaseNotes, hotfix, branch } = options
+  const { owner, repo, productionRelease, setLatest, releaseNotes: suppliedReleaseNotes, hotfix, branch } = options
   const baseReleaseName = newVersionCode !== undefined ? `${newVersionName} (${newVersionCode})` : newVersionName
   const releaseName = platform === PLATFORM_ALL ? baseReleaseName : `[${platform}] ${baseReleaseName}`
   const previousTagName = hotfix && branch ? await findPreviousTagForBranch(owner, repo, branch, appOctokit) : undefined
@@ -260,7 +260,7 @@ export const createGithubRelease = async (
     repo,
     tag_name: newVersionName,
     prerelease: !productionRelease,
-    make_latest: 'true',
+    make_latest: (setLatest ?? productionRelease) ? 'true' : 'false',
     name: releaseName,
     body: releaseNotes,
   })
