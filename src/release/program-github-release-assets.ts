@@ -16,23 +16,19 @@ const uploadAssets = async (options: GithubUploadAssetsOptions) => {
 
   const appOctokit = await authenticate(options)
 
-  await Promise.all(
-    files
-      .split('\n')
-      .filter(file => !file.includes('e2e'))
-      .map(async file => {
-        console.log(`Uploading ${file}`)
-        const filename = file.substring(file.lastIndexOf('/') + 1)
-        const fileData = fs.readFileSync(file)
-        await appOctokit.rest.repos.uploadReleaseAsset({
-          owner,
-          repo,
-          release_id: releaseId,
-          name: filename,
-          data: fileData as unknown as string,
-        })
-      }),
-  )
+  const filesToUpload = files.split('\n').filter(file => !file.includes('e2e'))
+  for (const file of filesToUpload) {
+    console.log(`Uploading ${file}`)
+    const filename = file.substring(file.lastIndexOf('/') + 1)
+    const fileData = fs.readFileSync(file)
+    await appOctokit.rest.repos.uploadReleaseAsset({
+      owner,
+      repo,
+      release_id: releaseId,
+      name: filename,
+      data: fileData as unknown as string,
+    })
+  }
 }
 
 export default (parent: Command) => {
