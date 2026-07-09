@@ -9,6 +9,7 @@ type GithubOpenPrOptions = GithubAuthenticationParams & {
   title: string
   body: string
   message: string
+  label: string[]
 }
 
 // Upload every file as a git blob and commit them on top of the base branch, returning the new commit's sha
@@ -70,6 +71,23 @@ const resetHeadBranchToCommit = async (
   }
 }
 
+const addLabels = async (
+  appOctokit: Octokit,
+  options: GithubOpenPrOptions,
+  pullRequestNumber: number,
+): Promise<void> => {
+  const { owner, repo, label: labels } = options
+  if (labels.length === 0) {
+    return
+  }
+  // The PR is already open at this point, so a labelling failure should only warn, not fail the command
+  try {
+    await appOctokit.issues.addLabels({ owner, repo, issue_number: pullRequestNumber, labels })
+  } catch (e) {
+    console.warn(`Could not add labels ${labels.join(', ')} to pull request #${pullRequestNumber}: ${e}`)
+  }
+}
+
 // Open a pull request from the head branch into the base branch, reusing an already open one if it exists
 const openPullRequest = async (appOctokit: Octokit, options: GithubOpenPrOptions): Promise<void> => {
   const { owner, repo, base, head, title, body } = options
@@ -78,11 +96,13 @@ const openPullRequest = async (appOctokit: Octokit, options: GithubOpenPrOptions
   const [existingPullRequest] = openPullRequests.data
   if (existingPullRequest) {
     console.warn(`A pull request from ${head} into ${base} is already open, reusing it.`)
+    await addLabels(appOctokit, options, existingPullRequest.number)
     console.log(existingPullRequest.html_url)
     return
   }
 
   const pullRequest = await appOctokit.pulls.create({ owner, repo, base, head, title, body })
+  await addLabels(appOctokit, options, pullRequest.data.number)
   console.warn(`Opened a pull request from ${head} into ${base}.`)
   console.log(pullRequest.data.html_url)
 }
@@ -108,6 +128,12 @@ export default (parent: Command): Command => {
     .requiredOption('--message <message>', 'the commit message')
     .requiredOption('--title <title>', 'the title of the pull request')
     .option('--body <body>', 'the body of the pull request', '')
+    .option(
+      '--label <label>',
+      'a label to add to the pull request; repeat to add several',
+      (label: string, previous: string[]) => [...previous, label],
+      [],
+    )
     .action(async (files: string[], options: GithubOpenPrOptions) => {
       try {
         await commitFilesAndOpenPullRequest(files, options)
