@@ -4,6 +4,7 @@ import { Platform, PLATFORM_ALL } from '../constants.js'
 
 type GithubPromoteReleaseOptions = GithubAuthenticationParams & {
   platform?: Platform
+  setLatest: boolean
 }
 
 const getReleases = async (options: GithubPromoteReleaseOptions) => {
@@ -21,8 +22,8 @@ const getReleases = async (options: GithubPromoteReleaseOptions) => {
   return releases.data.filter(release => release.name?.includes(platform))
 }
 
-const promoteReleases = async (options: GithubAuthenticationParams) => {
-  const { owner, repo } = options
+const promoteReleases = async (options: GithubPromoteReleaseOptions) => {
+  const { owner, repo, setLatest } = options
   const releases = await getReleases(options)
   const preReleases = releases.filter(release => release.prerelease)
   const appOctokit = await authenticate(options)
@@ -34,7 +35,7 @@ const promoteReleases = async (options: GithubAuthenticationParams) => {
         repo,
         release_id: preRelease.id,
         prerelease: false,
-        make_latest: isLatest ? 'true' : 'false',
+        make_latest: setLatest && isLatest ? 'true' : 'false',
       })
       console.warn(`Release ${preRelease.tag_name} promoted with status:`, result.status)
     }),
@@ -50,8 +51,9 @@ const promoteReleases = async (options: GithubAuthenticationParams) => {
 export default (parent: Command) => {
   const command = parent
     .command('promote')
-    .description('Remove pre-release flag from the latest release')
-    .option('--platform <platform>')
+    .description('Remove pre-release flag from all pre-releases')
+    .option('--platform <platform>', 'Only promotes releases which names match the platform')
+    .option('--no-set-latest', "Don't set the most recent release as latest release")
     .action(async (options: GithubPromoteReleaseOptions) => {
       try {
         const promotedRelease = await promoteReleases(options)

@@ -4,6 +4,7 @@ import { Platform } from '../constants.js'
 
 export type GithubReleaseOptions = GithubAuthenticationParams & {
   productionRelease: boolean
+  setLatest?: boolean
   releaseNotes?: string
   hotfix: boolean
   branch?: string
@@ -14,6 +15,8 @@ export default (parent: Command) => {
     .command('create <platform> <new-version-name> [new-version-code]')
     .description('creates a new release for the specified platform')
     .option('--production-release', 'Whether this is a production or a pre-release.', false)
+    .option('--set-latest', 'Set this release as latest release. Defaults to --production-release.')
+    .option('--no-set-latest', "Don't set this release as latest release. Defaults to --production-release.")
     .option('--release-notes <release-notes>', 'The release notes as JSON string, will be auto-generated otherwise.')
     .option('--hotfix', 'Generate release notes only from changes since the branch was cut.', false)
     .option('--branch <branch>', 'The current branch, required when --hotfix is set.')
