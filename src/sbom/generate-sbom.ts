@@ -17,7 +17,11 @@ const ensureSyftInstalled = () => {
       )
     }
     console.log('syft not found, installing...')
-    execSync('curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin', { stdio: 'inherit' })
+    // Install into a directory the current user is guaranteed to own
+    const installDir = nodePath.join(os.homedir(), '.local', 'bin')
+    fs.mkdirSync(installDir, { recursive: true })
+    execSync(`curl -sSfL https://get.anchore.io/syft | sh -s -- -b ${installDir}`, { stdio: 'inherit' })
+    process.env['PATH'] = `${installDir}${nodePath.delimiter}${process.env['PATH']}`
   }
 }
 
