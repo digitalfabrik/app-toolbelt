@@ -1,10 +1,11 @@
 import { createAppAuth } from '@octokit/auth-app'
 import { Octokit } from '@octokit/rest'
 import { throttling, ThrottlingOptions } from '@octokit/plugin-throttling'
-import { Platform, PLATFORM_ALL, VERSION_FILE } from './constants.js'
+import { Platform, PLATFORM_ALL, PUBLICCODE_FILE, VERSION_FILE } from './constants.js'
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 import { formatReleaseNotesForMattermost } from './util.js'
+import { updatePublicCode } from './publiccode/publiccode.js'
 
 // https://github.com/apps/deliverino
 const DELIVERINO_APP_ID = '59249'
@@ -95,6 +96,38 @@ export const createTag = async (
   console.warn(`New ref with name ${tagName} successfully created.`)
 }
 
+const getPublicCodeBlob = async (
+  owner: string,
+  repo: string,
+  branch: string,
+  newVersion: string,
+  releaseDate: Date,
+  appOctokit: Octokit,
+): Promise<{ path: string; mode: '100644'; type: 'blob'; sha: string }> => {
+  const publicCodeFile = await appOctokit.repos.getContent({ owner, repo, path: PUBLICCODE_FILE, ref: branch })
+  if (Array.isArray(publicCodeFile.data) || publicCodeFile.data.type !== 'file') {
+    throw new Error(`${PUBLICCODE_FILE} is not a file.`)
+  }
+  const currentContent = Buffer.from(publicCodeFile.data.content, 'base64').toString('utf-8')
+  const updatedContent = updatePublicCode(currentContent, {
+    softwareVersion: newVersion,
+    releaseDate: releaseDate.toISOString().slice(0, 10),
+  })
+
+  const blob = await appOctokit.git.createBlob({
+    owner,
+    repo,
+    content: Buffer.from(updatedContent).toString('base64'),
+    encoding: 'base64',
+  })
+  return { path: PUBLICCODE_FILE, mode: '100644', type: 'blob', sha: blob.data.sha }
+}
+
+/**
+ * Commits a version bump to VERSION_FILE and, if updatePublicCode is set, also updates the
+ * `softwareVersion` and `releaseDate` fields of the repository's root PUBLICCODE_FILE, both as a
+ * single atomic commit.
+ */
 export const commitVersion = async (
   versionName: string,
   versionCode: number | undefined,
@@ -102,30 +135,44 @@ export const commitVersion = async (
   repo: string,
   branch: string,
   appOctokit: Octokit,
+  updatePublicCode = false,
+  releaseDate: Date = new Date(),
 ): Promise<string | undefined> => {
-  const versionFileContent = await appOctokit.repos.getContent({ owner, repo, path: VERSION_FILE, ref: branch })
-
   const versionContent = versionCode !== undefined ? { versionName, versionCode } : { versionName }
-  const contentBase64 = Buffer.from(JSON.stringify(versionContent)).toString('base64')
-
   const commitMessage =
     versionCode !== undefined
       ? `Bump version name to ${versionName} and version code to ${versionCode}\n[skip ci]`
       : `Bump version name to ${versionName}\n[skip ci]`
 
-  const commit = await appOctokit.repos.createOrUpdateFileContents({
+  const {
+    data: { commit: baseCommit },
+  } = await appOctokit.repos.getBranch({ owner, repo, branch })
+
+  const versionBlob = await appOctokit.git.createBlob({
     owner,
     repo,
-    path: VERSION_FILE,
-    content: contentBase64,
-    branch,
-    message: commitMessage,
-    // @ts-expect-error Random typescript error: property sha is not available on type { ..., sha: string, ... }
-    sha: versionFileContent.data.sha,
+    content: Buffer.from(JSON.stringify(versionContent)).toString('base64'),
+    encoding: 'base64',
   })
+
+  const tree = [
+    { path: VERSION_FILE, mode: '100644' as const, type: 'blob' as const, sha: versionBlob.data.sha },
+    ...(updatePublicCode ? [await getPublicCodeBlob(owner, repo, branch, versionName, releaseDate, appOctokit)] : []),
+  ]
+
+  const newTree = await appOctokit.git.createTree({ owner, repo, base_tree: baseCommit.commit.tree.sha, tree })
+  const commit = await appOctokit.git.createCommit({
+    owner,
+    repo,
+    message: commitMessage,
+    tree: newTree.data.sha,
+    parents: [baseCommit.sha],
+  })
+  await appOctokit.git.updateRef({ owner, repo, ref: `heads/${branch}`, sha: commit.data.sha })
+
   console.warn(`New version successfully commited with message "${commitMessage}".`)
 
-  return commit.data.commit.sha
+  return commit.data.sha
 }
 
 /**
