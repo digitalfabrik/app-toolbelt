@@ -104,7 +104,17 @@ const getPublicCodeBlob = async (
   releaseDate: Date,
   appOctokit: Octokit,
 ): Promise<{ path: string; mode: '100644'; type: 'blob'; sha: string }> => {
-  const publicCodeFile = await appOctokit.repos.getContent({ owner, repo, path: PUBLICCODE_FILE, ref: branch })
+  const publicCodeFile = await appOctokit.repos
+    .getContent({ owner, repo, path: PUBLICCODE_FILE, ref: branch })
+    .catch(error => {
+      if (error?.status === 404) {
+        throw new Error(
+          `${PUBLICCODE_FILE} not found at the repository root of ${owner}/${repo} on branch ${branch}. ` +
+            `--update-public-code requires a ${PUBLICCODE_FILE} to already exist there.`,
+        )
+      }
+      throw error
+    })
   if (Array.isArray(publicCodeFile.data) || publicCodeFile.data.type !== 'file') {
     throw new Error(`${PUBLICCODE_FILE} is not a file.`)
   }

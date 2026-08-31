@@ -50,7 +50,8 @@ export default (parent: Command) => {
     .option('--hotfix', 'Also bump the version on the main branch.', false)
     .option(
       '--update-public-code',
-      "Also update the softwareVersion and releaseDate fields of the repository's root publiccode.yml as part of the bump commit.",
+      'Also update the softwareVersion and releaseDate fields of the publiccode.yml as part of the bump commit. ' +
+        'Requires a publiccode.yml to already exist at the repository root; fails otherwise.',
       false,
     )
     .action(async (newVersionName, newVersionCode: string | undefined, options: GithubBumpVersionOptions) => {
