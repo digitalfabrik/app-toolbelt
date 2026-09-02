@@ -1,4 +1,4 @@
-export const updatePublicCode = (content: string, updates: Record<string, string>): string =>
+export const getUpdatedPublicCode = (content: string, updates: Record<string, string>): string =>
   Object.entries(updates).reduce((current, [field, value]) => {
     // Matches a top-level (non-indented) `<field>:` key and everything after it on the same line (m),
     // e.g. `softwareVersion: "2025.9.2"` or `releaseDate: "2025-09-01"`.

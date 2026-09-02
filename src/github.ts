@@ -5,7 +5,7 @@ import { Platform, PLATFORM_ALL, PUBLICCODE_FILE, VERSION_FILE } from './constan
 import { GithubReleaseOptions } from './release/program-github-release.js'
 import { Command } from 'commander'
 import { formatReleaseNotesForMattermost } from './util.js'
-import { updatePublicCode } from './publiccode/publiccode.js'
+import { getUpdatedPublicCode } from './publiccode/publiccode.js'
 
 // https://github.com/apps/deliverino
 const DELIVERINO_APP_ID = '59249'
@@ -101,7 +101,6 @@ const getPublicCodeBlob = async (
   repo: string,
   branch: string,
   newVersion: string,
-  releaseDate: Date,
   appOctokit: Octokit,
 ): Promise<{ path: string; mode: '100644'; type: 'blob'; sha: string }> => {
   const publicCodeFile = await appOctokit.repos
@@ -119,9 +118,9 @@ const getPublicCodeBlob = async (
     throw new Error(`${PUBLICCODE_FILE} is not a file.`)
   }
   const currentContent = Buffer.from(publicCodeFile.data.content, 'base64').toString('utf-8')
-  const updatedContent = updatePublicCode(currentContent, {
+  const updatedContent = getUpdatedPublicCode(currentContent, {
     softwareVersion: newVersion,
-    releaseDate: releaseDate.toISOString().slice(0, 10),
+    releaseDate: new Date().toISOString().slice(0, 10),
   })
 
   const blob = await appOctokit.git.createBlob({
@@ -146,7 +145,6 @@ export const commitVersion = async (
   branch: string,
   appOctokit: Octokit,
   updatePublicCode = false,
-  releaseDate: Date = new Date(),
 ): Promise<string | undefined> => {
   const versionContent = versionCode !== undefined ? { versionName, versionCode } : { versionName }
   const commitMessage =
@@ -167,7 +165,7 @@ export const commitVersion = async (
 
   const tree = [
     { path: VERSION_FILE, mode: '100644' as const, type: 'blob' as const, sha: versionBlob.data.sha },
-    ...(updatePublicCode ? [await getPublicCodeBlob(owner, repo, branch, versionName, releaseDate, appOctokit)] : []),
+    ...(updatePublicCode ? [await getPublicCodeBlob(owner, repo, branch, versionName, appOctokit)] : []),
   ]
 
   const newTree = await appOctokit.git.createTree({ owner, repo, base_tree: baseCommit.commit.tree.sha, tree })
