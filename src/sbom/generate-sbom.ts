@@ -79,25 +79,28 @@ export default (parent: Command) => {
         if (path && branch) {
           const contentBase64 = fs.readFileSync(tmpFile).toString('base64')
 
-          let sha: string | undefined
-          try {
-            const existing = await appOctokit.repos.getContent({ owner, repo, path: path, ref: branch })
-            if (!Array.isArray(existing.data)) {
-              sha = existing.data.sha
-            }
-          } catch (e) {
-            console.error(e)
-          }
+          const {
+            data: { commit: baseCommit },
+          } = await appOctokit.repos.getBranch({ owner, repo, branch })
 
-          await appOctokit.repos.createOrUpdateFileContents({
+          const blob = await appOctokit.git.createBlob({ owner, repo, content: contentBase64, encoding: 'base64' })
+
+          const newTree = await appOctokit.git.createTree({
             owner,
             repo,
-            path,
-            branch,
-            message: `Add SBOM for ${versionName}\n[skip ci]`,
-            content: contentBase64,
-            ...(sha ? { sha } : {}),
+            base_tree: baseCommit.commit.tree.sha,
+            tree: [{ path, mode: '100644', type: 'blob', sha: blob.data.sha }],
           })
+
+          const commit = await appOctokit.git.createCommit({
+            owner,
+            repo,
+            message: `Add SBOM for ${versionName}\n[skip ci]`,
+            tree: newTree.data.sha,
+            parents: [baseCommit.sha],
+          })
+
+          await appOctokit.git.updateRef({ owner, repo, ref: `heads/${branch}`, sha: commit.data.sha })
 
           console.log(`SBOM committed to ${path} on ${branch}`)
         }
