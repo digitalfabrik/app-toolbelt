@@ -28,7 +28,7 @@ const ensureSyftInstalled = () => {
 const generateSbomFile = (sourceName: string, versionName: string): string => {
   const tmpFile = nodePath.join(os.tmpdir(), SBOM_ASSET_NAME)
   console.log(`Generating SBOM for ${sourceName}@${versionName}`)
-  execSync(`syft scan . -o spdx-json=${tmpFile}`, {
+  execSync(`syft scan . -o spdx-json@3.0=${tmpFile}`, {
     env: {
       ...process.env,
       SYFT_SOURCE_VERSION: versionName,
